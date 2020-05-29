@@ -1,40 +1,76 @@
 import React, { Component } from "react"
-import { TextInput, Button, Alert, Text,TouchableOpacity} from "react-native"
+import { TextInput, Button, Alert, Text,TouchableOpacity,ImageBackground } from "react-native"
 import { View } from "native-base"
-import { Header} from "react-native-elements"
+import { Header } from "react-native-elements"
 
-class Registeration extends Component {
+export default class Registeration extends Component {
     constructor() {
         super();
         this.state = {
             username: "",
             password: "",
+            verPassword: "",
             email: ""
         }
     }
 
+
+    returnButton(){
+
+        return(
+            <View style = {{alignSelf: "flex-end", right: "-20%", top: "-40%", width: "130%", height: "13%"}}>
+                <TouchableOpacity
+                    title = "Return"
+                    style={styles.returnButton}
+                    onPress = {()=>this.goBack()}
+                >
+                    <Text style = {styles.returnButtonText}>חזור</Text>
+                </TouchableOpacity>
+            </View>
+        )
+    }
+    goBack(){
+        Alert.alert("איפוס שדות")
+    }
+
+
+
+    signUpButton(){
+
+        return(
+            <View style = {styles.buttonViewStyle}>
+                <TouchableOpacity
+                    title = "SignUp"
+                    style={styles.buttonStyle}
+                    onPress = {() =>this.signUp()}
+                >
+                <Text style = {{fontSize: 20, color: "#fff"}}>הרשם</Text>
+                </TouchableOpacity>
+            </View>
+        )
+    }
+    signUp(){
+        Alert.alert("לבדוק תקינות קלט ואיפוס שדות אחרי הוספה")
+    }
+
+
+
     render(){
         return(
-            <View>
+            <ImageBackground source={require ('../Images/BackGround.jpg')} imageStyle={{opacity:0.15}} style={{flex: 1,height:"100%"}}>
+                
                 <Header 
                     centerComponent = {{text: 'הרשמה' ,style: styles.centerComponentStyle }}
-                    backgroundColor="#82b74b"
-                    rightComponent = { <TouchableOpacity
-                                            title = "signIn"
-                                            style={styles.returnButton}
-                                        >
-                                        <Text style = {styles.returnButtonText}>חזור</Text>
-                                    </TouchableOpacity>
-                    
-                    
-                   }
+                    backgroundColor="#e6ffe6"
+                    leftComponent = {this.returnButton()}
                 />
+
                 <View style={styles.inputView}>
                     <TextInput
                         style = {styles.textInputStyle}
                         textAlign = "center"
                         placeholder = {"שם משתמש"}
-                        placeholderTextColor = "#82b74b"
+                        placeholderTextColor = "#006400"
                         autoCorrect = {false}
                         onChangeText = {username => this.setState({ username })}
                         value = {this.state.username}
@@ -46,7 +82,7 @@ class Registeration extends Component {
                         style = {styles.textInputStyle}
                         textAlign = "center"
                         placeholder = {"סיסמא"}
-                        placeholderTextColor = "#82b74b"
+                        placeholderTextColor = "#006400"
                         secureTextEntry = {true}
                         autoCorrect = {false}
                         onChangeText = {password => this.setState({ password })}
@@ -59,11 +95,11 @@ class Registeration extends Component {
                         style = {styles.textInputStyle}
                         textAlign = "center"
                         placeholder = {"אימות סיסמא"}
-                        placeholderTextColor = "#82b74b"
+                        placeholderTextColor = "#006400"
                         secureTextEntry = {true}
                         autoCorrect = {false}
-                        //onChangeText = {password => this.setState({ password })}
-                        value = {this.state.password}
+                        onChangeText = {verPassword => this.setState({ verPassword })}
+                        value = {this.state.verPassword}
                     />
                 </View>
 
@@ -72,36 +108,19 @@ class Registeration extends Component {
                         style = {styles.textInputStyle}
                         textAlign = "center"
                         placeholder = {"אימייל"}
-                        placeholderTextColor = "#82b74b"
+                        placeholderTextColor = "#006400"
                         autoCorrect = {false}
                         onChangeText = {email => this.setState({ email })}
                         value = {this.state.email}
                     />
                 </View>
 
-                <View style = {styles.buttonViewStyle}>
-                    <TouchableOpacity
-                        title = "signIn"
-                        style={styles.buttonStyle}
-                    >
-                    <Text style = {styles.buttonTextStyle}>הרשם</Text>
-                    </TouchableOpacity>
-                </View>
+                <View>{this.signUpButton()}</View>
 
-
-
-
-
-
-
-            </View>
+            </ImageBackground>
         )
     }
-
-
 }
-
-export default Registeration;
 
 
 const styles = {
@@ -112,20 +131,19 @@ const styles = {
         width : "90%"
     },
     textInputStyle: {
-        //height : 30,
         borderColor: "#006400",
-        borderRadius: 25,
+        borderRadius: 15,
         borderWidth: 3,
         fontSize: 20,
         width: "80%",
         alignSelf: "center"
     },
     centerComponentStyle:{
-        color: "#fff",
+        color: "#006400",
         fontWeight: "bold",
-        fontSize:30
+        fontSize:30,
+        top:-10
     },
-
     buttonViewStyle: {
         paddingTop: "15%",
         width: "50%",
@@ -139,26 +157,22 @@ const styles = {
         backgroundColor:'#006400',
         borderColor: "#004577",
         borderWidth:3,
-        borderRadius: 10,  
+        borderRadius: 10,   
     },
-    buttonTextStyle:{
-        fontSize : 25,
-        color : "white",
-    },
-
     returnButton:{
-        height : 50,
-        width:50,
-        alignItems:'center',
-        justifyContent:'center',
         backgroundColor:'#006400',
-        borderColor: "#004577",
-        borderWidth:3,
-        borderRadius: 25,
-        top: -10
+        color: "#fff",
+        borderRadius: 26,
+        fontSize: 20,
+        width: 60,
+        alignSelf: "center",
+        alignItems: "center",
+        justifyContent: "center",
+        height: 35,
+        left: -10
     },
     returnButtonText:{
-        fontSize : 20,
-        color : "white",
+        fontSize: 20, 
+        color: "#fff"
     }
 }

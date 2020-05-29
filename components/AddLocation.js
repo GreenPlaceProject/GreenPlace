@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { View , TextInput , Text , ImageBackground , Picker, TouchableOpacity,Alert} from "react-native";
-import { Header} from "react-native-elements"
+import { View , TextInput , Text , ImageBackground , Picker, TouchableOpacity,Alert } from "react-native";
+import { Header } from "react-native-elements"
 
 
 
@@ -32,14 +32,13 @@ class AddLocationForm extends Component{
             </View>
         )
     }
-
     goBack(){
         Alert.alert("לא לשכוח למחוק שדות")
     }
 
     updateButton(){
         return (
-            <View style = {{paddingTop: "6%"}}>
+            <View style = {styles.buttonViewStyle}>
                 <TouchableOpacity
                     title = "AddALocation"
                     style = {styles.buttonStyle}
@@ -50,14 +49,14 @@ class AddLocationForm extends Component{
             </View>
         )
     }
-
     update(){
-        Alert.alert("לא לשכוח למחוק שדות")
+        Alert.alert("איפוס שדות אחרי עדכון")
     }
+
 
     render(){
         return(
-            <ImageBackground source={{uri: 'https://as1.ftcdn.net/jpg/00/56/36/10/500_F_56361031_5EREx9ZYgszatFr3NQTSQRMNI48LSh4N.jpg'}} imageStyle={{opacity:0.15}} style={{flex: 1,height:"100%"}}>
+            <ImageBackground source={require ('../Images/BackGround.jpg')} imageStyle={{opacity:0.15}} style={{flex: 1,height:"100%"}}>
                 <View>
                     <Header 
                         backgroundColor="#e6ffe6"
@@ -66,28 +65,24 @@ class AddLocationForm extends Component{
                                          
                     > 
                     </Header>
-                    
                 </View>              
 
-             
-                <View style={{marginTop:60,marginBottom:20}}>
+                <View style={{marginTop:60,marginBottom:20,height:'10%'}}>
                     <TextInput style={styles.textInputStyle}
                         textAlign = "center"
                         placeholder = {"שם מקום"}
-                        placeholderTextColor = "#006400"
-                        height = {45}
+                        placeholderTextColor = "#006400"                        
                         autoCorrect = {false}
                         onChangeText = {place => this.setState({place})}
                         value = {this.state.place}
                     />
                 </View>
-
                 <View style={styles.pickerStyle}>
-                    <Picker style={{color: "#006400" , left:-52 , top: -4}} 
-    
+                    <Picker style={{color: "#006400" , left:-52 , top: '-4%'}} 
                         selectedValue={this.state.selectedLabel}
                         onValueChange = {this.Show.bind()}
                     >
+
                         <Picker.Item label="בחר קטגוריה" value="1" ></Picker.Item>
                         <Picker.Item label="עץ פרי" value="2"></Picker.Item>
                         <Picker.Item label="צמח מאכל ומרפא" value="3"></Picker.Item>
@@ -109,7 +104,6 @@ class AddLocationForm extends Component{
                         textAlign = "center"
                         placeholder = {"תיאור"}
                         placeholderTextColor = "#006400"
-                        height = {45}
                         autoCorrect = {false}
                         onChangeText = {description => this.setState({description})}
                         value = {this.state.description}
@@ -117,6 +111,7 @@ class AddLocationForm extends Component{
                 </View>
 
                 <View>{this.updateButton()}</View>
+
             </ImageBackground>
         )
     }
@@ -139,18 +134,13 @@ const styles = {
         alignSelf: "center"
     },
     buttonStyle: {
+        height : 45,
+        alignItems:'center',
+        justifyContent:'center',
         backgroundColor:'#006400',
-        borderColor: "#00ad5f",
-        color: "#fff",
-        borderRadius: 20,
-        borderWidth: 1,
-        fontSize: 20,
-        width: "40%",
-        alignSelf: "center",
-        alignItems: "center",
-        justifyContent: "center",
-        height: 45, 
-        bottom:-60
+        borderColor: "#004577",
+        borderWidth:3,
+        borderRadius: 10, 
     },
     backButtonStyle: {
         backgroundColor:'#006400',
@@ -172,9 +162,8 @@ const styles = {
         alignSelf: "center",
         color: "#006400",
         borderColor: "#006400",
-        height : "8%",
-        top:"2%"
-        
+        height : "10%",
+        top:"2%",
     },
     buttonTextStyle:{
         fontSize : 25,
@@ -186,4 +175,10 @@ const styles = {
         fontSize:30,
         top:-10
     },
+    buttonViewStyle: {
+        paddingTop: "15%",
+        width: "50%",
+        alignSelf : "center",
+        borderColor : "grey",
+    }
 }

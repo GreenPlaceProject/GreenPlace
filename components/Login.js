@@ -1,5 +1,5 @@
 import React, {Component } from "react"
-import {View, TextInput, Alert, Image,TouchableOpacity,Text} from "react-native"
+import {View, TextInput, Alert, Image, TouchableOpacity, Text, ImageBackground} from "react-native"
 
 class Login extends Component {
 
@@ -20,8 +20,6 @@ class Login extends Component {
 
     forgotPasswordButton(){
 
-
-
         return (
             <View style = {{ width: "30%",left: "7%"}}>
                 <TouchableOpacity
@@ -34,14 +32,11 @@ class Login extends Component {
         )
     }
     forgotPassword(){
-        Alert.alert("קורה");
-
+        
     }
 
 
     LoginButton() {
-
-
 
         return (
             <View style = {styles.buttonViewStyle}>
@@ -56,12 +51,11 @@ class Login extends Component {
         )
     }
     login(){
-        Alert.alert("תשאר בחוץ בבקשה");
+        Alert.alert("לוודא תקינות קלט,לשנות ממצב אורח למשתמש");
     }
 
 
     registerButton() {
-
 
         return (
             <View style = {styles.buttonViewStyle}>
@@ -76,12 +70,11 @@ class Login extends Component {
         )
     }
     register(){
-        Alert.alert("מה אני מקבל בתמורה?");
+        Alert.alert("איפוס שדות");
     }
 
     guestButton(){
 
-        
         return (
             <View style = {styles.buttonViewStyle}>
                 <TouchableOpacity
@@ -93,10 +86,9 @@ class Login extends Component {
                 </TouchableOpacity>
             </View>
         )
-
     }
     enterAsAGuest(){
-        Alert.alert("אוכל חינם!");
+        Alert.alert("איפוס שדות");
     }
 
 
@@ -111,6 +103,7 @@ class Login extends Component {
                     style={styles.image}
                 />
 
+                <ImageBackground source={require ('../Images/BackGround.jpg')} imageStyle={{opacity:0.15}} style={{flex: 1,height:"100%"}}>
                 <View style = {styles.InputView}>
                     <TextInput style = {styles.textInputStyle}
                         placeholder = "שם משתמש"
@@ -137,7 +130,7 @@ class Login extends Component {
                 <View>{this.registerButton()}</View>
                 <View>{this.guestButton()}</View>
 
-
+                </ImageBackground>
             </View>
         )
     }
@@ -152,7 +145,7 @@ class Login extends Component {
 
 const styles = {
     image: {
-        height: "33%",
+        height: "25%",
         width: "100%",
         alignSelf: "center",
         marginBottom: "5%", 
@@ -161,16 +154,16 @@ const styles = {
     },
 
     inputView :{
-        paddingTop: "6%",    
+        paddingTop: "6%",  
     },
     textInputStyle: {
-        alignSelf: "center",
-        textAlign: "center",
-        width: "80%",
         borderColor: "#006400",
+        borderRadius: 15,
         borderWidth: 3,
-        borderRadius: 25,
         fontSize: 20,
+        width: "80%",
+        alignSelf: "center",
+        textAlign: 'center'
     },
 
     buttonViewStyle: {
@@ -186,11 +179,11 @@ const styles = {
         backgroundColor:'#006400',
         borderColor: "#004577",
         borderWidth:3,
-        borderRadius: 50,  
+        borderRadius: 10,   
     },
     buttonTextStyle:{
-        fontSize : 25,
-        color : "white",
+        fontSize: 20,
+        color: "#fff"
     }
 }
 
