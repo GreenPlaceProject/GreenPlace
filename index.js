@@ -10,4 +10,4 @@ import Registeration from './components/Registeration';
 import AddLocation from './components/AddLocation';
 import Map from './components/Map';
 
-AppRegistry.registerComponent(appName, () => AddLocation);
+AppRegistry.registerComponent(appName, () => Login);

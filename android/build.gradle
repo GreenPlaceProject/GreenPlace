@@ -9,6 +9,7 @@ buildscript {
         supportLibVersion = "28.0.0"
         googlePlayServiceVersion = "17.0.0"
         androidMapsUtilVersion = "0.6.2"
+        
     }
     repositories {
         google()
