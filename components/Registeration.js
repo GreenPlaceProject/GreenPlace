@@ -2,10 +2,14 @@ import React, { Component } from "react"
 import { TextInput, Button, Alert, Text,TouchableOpacity,ImageBackground } from "react-native"
 import { View } from "native-base"
 import { Header } from "react-native-elements"
+import firebase from '../config/Firebase'
+
+
 
 export default class Registeration extends Component {
     constructor() {
         super();
+        this.usersRef = firebase.firestore().collection('Users')
         this.state = {
             username: "",
             password: "",
@@ -37,6 +41,7 @@ export default class Registeration extends Component {
 
     signUpButton(){
 
+
         return(
             <View style = {styles.buttonViewStyle}>
                 <TouchableOpacity
@@ -50,8 +55,45 @@ export default class Registeration extends Component {
         )
     }
     signUp(){
-        Alert.alert("לבדוק תקינות קלט ואיפוס שדות אחרי הוספה")
+        if(this.state.username === "" || this.state.password === ""|| this.state.verPassword === "" || this.state.email === ""){
+            Alert.alert("אנא מלא את כל השדות");
+            return;
+        }
+        if(this.state.password.length < 6){
+            Alert.alert("אנא הכנס סיסמא בעלת לפחות 6 תווים");
+            return;
+        }
+        if(this.state.password !== this.state.verPassword )
+        {
+            Alert.alert("הסיסמאות אינן תואמות");
+            return;
+        }
+        //לבדוק שהמשתמש לא קיים ב'אוסף
+        this.usersRef.add({
+            Uid: this.state.username,
+            Username: this.state.username,
+            Email: this.state.email
+        })
+
+
+        firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
+        .then(function(user){
+            Alert.alert("נרשם בהצלחה");
+            // להוסיף 'שם משתשמש' לאוסף
+            //לעבור למסך אחר עם פרמטר (מפות) כמשתמש רשום
+        })
+        .catch(function(error) {
+            if(error.message === "The email address is already in use by another account.")
+                Alert.alert("המייל רשום")
+            else if(error.message === "The email address is badly formatted.")
+                Alert.alert("פורמט האימייל אינו תקין")
+            else
+                Alert.alert("אנא נסה שנית");
+        })
     }
+
+
+
 
 
 
