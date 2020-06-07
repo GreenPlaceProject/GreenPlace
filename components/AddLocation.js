@@ -60,7 +60,7 @@ class AddLocationForm extends Component{
                 <View>
                     <Header 
                         backgroundColor="#e6ffe6"
-                        leftComponent = {this.backButton()}
+                        rightComponent = {this.backButton()}
                         centerComponent = {{text: 'עריכת מקום' ,style: styles.centerComponentStyle }}
                                          
                     > 
@@ -78,24 +78,22 @@ class AddLocationForm extends Component{
                     />
                 </View>
                 <View style={styles.pickerStyle}>
-                    <Picker style={{color: "#006400" , left:-52 , top: '-4%'}} 
+                    <Picker style={{color: "#006400" , left:62 , top: '9%'}} 
                         selectedValue={this.state.selectedLabel}
-                        onValueChange = {this.Show.bind()}
-                    >
-
+                        onValueChange = {this.Show.bind()}>
                         <Picker.Item label="בחר קטגוריה" value="1" ></Picker.Item>
-                        <Picker.Item label="עץ פרי" value="2"></Picker.Item>
-                        <Picker.Item label="צמח מאכל ומרפא" value="3"></Picker.Item>
+                        <Picker.Item label="אתר פריחה" value="2"></Picker.Item>
+                        <Picker.Item label="אתר צפרות וצפיית חיות בר" value="3"></Picker.Item>
                         <Picker.Item label="גינה ציבורית" value="4"></Picker.Item>
-                        <Picker.Item label="חנות יד שניה" value="5"></Picker.Item>
-                        <Picker.Item label="גינה קהילתית" value="6"></Picker.Item>
-                        <Picker.Item label="אתר פריחה" value="7"></Picker.Item>
-                        <Picker.Item label="ספריית רחוב" value="8"></Picker.Item>
-                        <Picker.Item label="חנות טבע" value="9"></Picker.Item>
-                        <Picker.Item label="קומפוסטר" value="10"></Picker.Item>
+                        <Picker.Item label="גינה קהילתית" value="5"></Picker.Item>
+                        <Picker.Item label="חנות אופניים" value="6"></Picker.Item>
+                        <Picker.Item label="חנות טבע" value="7"></Picker.Item>
+                        <Picker.Item label="חנות יד שניה" value="8"></Picker.Item>
+                        <Picker.Item label="ספריית רחוב" value="9"></Picker.Item>
+                        <Picker.Item label="עץ פרי" value="10"></Picker.Item>
                         <Picker.Item label="פח מיחזור" value="11"></Picker.Item>
-                        <Picker.Item label="אתר צפרות וצפיית חיות בר" value="12"></Picker.Item>
-                        <Picker.Item label="חנות אופניים" value="13"></Picker.Item>
+                        <Picker.Item label="צמח מאכל ומרפא" value="12"></Picker.Item>
+                        <Picker.Item label="קומפוסטר" value="13"></Picker.Item>  
                     </Picker>
                 </View>
 
