@@ -1,10 +1,12 @@
 import React, {Component } from "react"
 import {View, TextInput, Alert, Image, TouchableOpacity, Text, ImageBackground} from "react-native"
+import firebase from '../config/Firebase'
 
 class Login extends Component {
 
     constructor() {
         super();
+        this.usersRef = firebase.firestore().collection('Users');
         this.state = {
             username: "",
             password: "",
@@ -32,7 +34,13 @@ class Login extends Component {
         )
     }
     forgotPassword(){
-        
+        firebase.auth().sendPasswordResetEmail(this.state.username)
+        .then(function(){
+            Alert.alert("מייל לאיפוס סיסמא נשלח בהצלחה");
+        })
+        .catch(function(){
+            Alert.alert("שם משתמש אינו קיים, אנא נסה שנית");
+        })
     }
 
 
@@ -50,8 +58,27 @@ class Login extends Component {
             </View>
         )
     }
-    login(){
-        Alert.alert("לוודא תקינות קלט,לשנות ממצב אורח למשתמש");
+    login(){    
+
+        if(this.state.username === "" | this.state.password === "")
+        {
+            Alert.alert("אחד או יותר מהשדות ריקים");
+            return;
+        }
+        //לבדוק ש'משתמש' קיים ולקשר בין משתמש למייל
+        
+        //change from this.state.username to the doc('username') in the line below
+        firebase.auth().signInWithEmailAndPassword(this.state.username,this.state.password)
+        .then(function(){
+            Alert.alert("ברוך הבא");
+        })
+        .catch(function(error){
+            if(error.code === "auth/user-not-found")
+                Alert.alert("שם משתמש אינו קיים");
+            else
+                Alert.alert("הסיסמא שגויה")
+        })
+        
     }
 
 
