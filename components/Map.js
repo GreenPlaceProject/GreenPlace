@@ -1,8 +1,9 @@
 import React, { Component } from "react"
 import { Text,TouchableOpacity,Picker} from "react-native"
-import { View } from "native-base"
+import { View, Button } from "native-base"
 import { Header} from "react-native-elements"
-import MapView , {PROVIDER_GOOGLE, Callout} from 'react-native-maps'
+import MapView , {PROVIDER_GOOGLE,Marker, Callout} from 'react-native-maps'
+import firebase from '../config/Firebase'
 
 
 class Map extends Component{
@@ -14,10 +15,32 @@ class Map extends Component{
         };
     }
 
+    func(){
+        <Marker
+            coordinate={{latitude:31.756106, longitude:35.165088}}
+        ></Marker>  
+    }
+
+
+
     show=(value)=>
     {
         this.setState({pickerSelectedLabel:value});
     }
+
+    /*func()
+    {
+        firebase.firestore().collection('Users').add({
+            Name: "something"
+        })
+        .then(function(){ Alert.alert("ok"); })
+
+        firebase.firestore().collection('Users').doc('IDAN').set({
+            Name: "idan",
+            email: "idan@co.com"
+        })
+        .then(function (){ Alert.alert("no"); })
+    }*/
 
     render(){
         return(
@@ -27,6 +50,7 @@ class Map extends Component{
                     rightComponent = { <TouchableOpacity
                                             title = "signIn"
                                             style={styles.returnButton}
+                                            //onPress={()=>this.func()}
                                         >
                                         <Text style = {styles.returnButtonText}>התנתק</Text>
                                         </TouchableOpacity>
@@ -66,15 +90,22 @@ class Map extends Component{
                             latitudeDelta: 0.014,
                             longitudeDelta: 0.001
                         }}
-                        onPress={ (event) =>
-                        alert("latitude:"+event.nativeEvent.coordinate.latitude+"\nlongitude:"+event.nativeEvent.coordinate.longitude ) }>
-                        
+                        onPress={()=>this.func()}
+                        >
+                        <Marker
+                            coordinate={{latitude: 31.756106,
+                                        longitude: 35.165088,}}>
+                            <Callout>
+                                <Button title="jhg"></Button>
+                            </Callout>
+                        </Marker>
                     </MapView>
                 </View>
             </View>
         )
     }
-
+    //<MapView.Marker coordinate={{ latitude:event.nativeEvent.coordinate.latitude,longitude:event.nativeEvent.coordinate.longitude}}></MapView.Marker>
+/*"latitude:"+event.nativeEvent.coordinate.latitude+"\nlongitude:"+event.nativeEvent.coordinate.longitude*/
 }
 
 export default Map;

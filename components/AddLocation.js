@@ -4,14 +4,13 @@ import { Header } from "react-native-elements"
 
 
 
-
 class AddLocationForm extends Component{
     constructor(){
         super();
         this.state = {
             place: "",
             description: "",
-            selectedLabel: ""
+            selectedLabel: "1"
         }
     }
 
@@ -50,13 +49,18 @@ class AddLocationForm extends Component{
         )
     }
     update(){
+        if(this.state.place === "" || this.state.selectedLabel === "1"){
+            Alert.alert("אנא מלא את כל השדות");
+            return;
+        }
         Alert.alert("איפוס שדות אחרי עדכון")
+        //firestore??
     }
 
 
     render(){
         return(
-            <ImageBackground source={require ('../Images/BackGround.jpg')} imageStyle={{opacity:0.15}} style={{flex: 1,height:"100%"}}>
+            <ImageBackground source={require ('../Images/BackGround.jpg')} imageStyle={{opacity:0.17}} style={{flex: 1,height:"100%"}}>
                 <View>
                     <Header 
                         backgroundColor="#e6ffe6"
@@ -105,6 +109,8 @@ class AddLocationForm extends Component{
                         autoCorrect = {false}
                         onChangeText = {description => this.setState({description})}
                         value = {this.state.description}
+                        multiline={true}
+                        numberOfLines={5}
                     />
                 </View>
 
