@@ -2,7 +2,7 @@ import React, { Component } from "react"
 import { Text,TouchableOpacity,Picker} from "react-native"
 import { View } from "native-base"
 import { Header} from "react-native-elements"
-import MapView , {PROVIDER_GOOGLE, Callout} from 'react-native-maps'
+import MapView , {PROVIDER_GOOGLE} from 'react-native-maps'
 
 
 class Map extends Component{
@@ -24,7 +24,7 @@ class Map extends Component{
             <View>
                 <Header 
                     backgroundColor="#e6ffe6"
-                    rightComponent = { <TouchableOpacity
+                    leftComponent = { <TouchableOpacity
                                             title = "signIn"
                                             style={styles.returnButton}
                                         >
@@ -35,24 +35,24 @@ class Map extends Component{
                     }   
                 >  
                 </Header>
-                <View style={{width:245 , left:15}}>
+                <View style={{width:300 , left:75}}>
                     <Picker 
                         selectedValue={this.state.pickerSelectedLabel}
                         onValueChange={this.show.bind()}
                         style={{position:'absolute',left:0 , bottom:10 , right:5}}>
                         <Picker.Item label="בחר קטגוריה" value="1" ></Picker.Item>
-                        <Picker.Item label="אתר פריחה" value="2"></Picker.Item>
-                        <Picker.Item label="אתר צפרות וצפיית חיות בר" value="3"></Picker.Item>
+                        <Picker.Item label="עץ פרי" value="2"></Picker.Item>
+                        <Picker.Item label="צמח מאכל ומרפא" value="3"></Picker.Item>
                         <Picker.Item label="גינה ציבורית" value="4"></Picker.Item>
-                        <Picker.Item label="גינה קהילתית" value="5"></Picker.Item>
-                        <Picker.Item label="חנות אופניים" value="6"></Picker.Item>
-                        <Picker.Item label="חנות טבע" value="7"></Picker.Item>
-                        <Picker.Item label="חנות יד שניה" value="8"></Picker.Item>
-                        <Picker.Item label="ספריית רחוב" value="9"></Picker.Item>
-                        <Picker.Item label="עץ פרי" value="10"></Picker.Item>
+                        <Picker.Item label="חנות יד שניה" value="5"></Picker.Item>
+                        <Picker.Item label="גינה קהילתית" value="6"></Picker.Item>
+                        <Picker.Item label="אתר פריחה" value="7"></Picker.Item>
+                        <Picker.Item label="ספריית רחוב" value="8"></Picker.Item>
+                        <Picker.Item label="חנות טבע" value="9"></Picker.Item>
+                        <Picker.Item label="קומפוסטר" value="10"></Picker.Item>
                         <Picker.Item label="פח מיחזור" value="11"></Picker.Item>
-                        <Picker.Item label="צמח מאכל ומרפא" value="12"></Picker.Item>
-                        <Picker.Item label="קומפוסטר" value="13"></Picker.Item>                       
+                        <Picker.Item label="אתר צפרות וצפיית חיות בר" value="12"></Picker.Item>
+                        <Picker.Item label="חנות אופניים" value="13"></Picker.Item>
                     </Picker>
                     
                 </View>
@@ -61,13 +61,11 @@ class Map extends Component{
                         provider={PROVIDER_GOOGLE}
                         style={styles.map}
                         region={{
-                            latitude: 31.756106,
+                            latitude: 31.758106,
                             longitude: 35.165088,
-                            latitudeDelta: 0.014,
+                            latitudeDelta: 0.04,
                             longitudeDelta: 0.001
-                        }}
-                        onPress={ (event) =>
-                        alert("latitude:"+event.nativeEvent.coordinate.latitude+"\nlongitude:"+event.nativeEvent.coordinate.longitude ) }>
+                        }}>
                         
                     </MapView>
                 </View>

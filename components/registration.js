@@ -1,5 +1,5 @@
 import React, { Component } from "react"
-import { TextInput, Button, Alert, Text,TouchableOpacity,ImageBackground } from "react-native"
+import { TextInput, Button, Alert, Text,TouchableOpacity,ImageBackground, KeyboardAvoidingView,ScrollView  } from "react-native"
 import { View } from "native-base"
 import { Header } from "react-native-elements"
 import firebase from '../config/Firebase'
@@ -69,12 +69,13 @@ export default class Registeration extends Component {
 
 
         firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
-        .then(function(user){
-            Alert.alert("נרשם בהצלחה");
-
-            //לעבור למסך אחר עם פרמטר (מפות) כמשתמש רשום
+        .then(() =>{
+            var user = this.state.username;
+            this.resetFields();
+            Alert.alert("הרשמה הושלמה");
+            this.props.navigation.navigate('Map',{user : user})
         })
-        .catch(function(error) {
+        .catch((error) => {
             if(error.message === "The email address is already in use by another account.")
                 Alert.alert("המייל רשום")
             else if(error.message === "The email address is badly formatted.")
@@ -86,6 +87,14 @@ export default class Registeration extends Component {
     }
     
 
+    resetFields(){
+        this.setState({
+            username: "",
+            password: "",
+            verPassword: "",
+            email: ""
+        })
+    }
 
 
 
@@ -93,7 +102,8 @@ export default class Registeration extends Component {
     render(){
         return(
             <ImageBackground source={require ('../Images/BackGround.jpg')} imageStyle={{opacity:0.15}} style={{flex: 1,height:"100%"}}>
-                
+            <KeyboardAvoidingView keyboardVerticalOffset={-550} >
+            <ScrollView>
                 <Header 
                     centerComponent = {{text: 'הרשמה' ,style: styles.centerComponentStyle }}
                     backgroundColor="#e6ffe6"
@@ -109,6 +119,8 @@ export default class Registeration extends Component {
                         autoCorrect = {false}
                         onChangeText = {username => this.setState({ username })}
                         value = {this.state.username}
+                        onSubmitEditing={() => { this.secondTextInput.focus(); }}
+                        blurOnSubmit={false}
                     />
                 </View>
                 
@@ -122,6 +134,9 @@ export default class Registeration extends Component {
                         autoCorrect = {false}
                         onChangeText = {password => this.setState({ password })}
                         value = {this.state.password}
+                        ref={(input) => { this.secondTextInput = input; }}
+                        onSubmitEditing={() => { this.thirdTextInput.focus(); }}
+                        blurOnSubmit={false}
                     />
                 </View>
 
@@ -135,6 +150,9 @@ export default class Registeration extends Component {
                         autoCorrect = {false}
                         onChangeText = {verPassword => this.setState({ verPassword })}
                         value = {this.state.verPassword}
+                        ref={(input) => { this.thirdTextInput = input; }}
+                        onSubmitEditing={() => { this.fourthTextInput.focus(); }}
+                        blurOnSubmit={false}
                     />
                 </View>
 
@@ -147,11 +165,14 @@ export default class Registeration extends Component {
                         autoCorrect = {false}
                         onChangeText = {email => this.setState({ email })}
                         value = {this.state.email}
+                        ref={(input) => { this.fourthTextInput = input; }}
+                        onSubmitEditing={ () => this.signUp() }
                     />
                 </View>
 
                 <View>{this.signUpButton()}</View>
-
+                </ScrollView>
+                </KeyboardAvoidingView>
             </ImageBackground>
         )
     }

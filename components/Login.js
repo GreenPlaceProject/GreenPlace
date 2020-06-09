@@ -12,8 +12,7 @@ class Login extends Component {
         this.usersRef = firebase.firestore().collection('Users');
         this.state = {
             username: "",
-            password: "",
-            registered: false,                  
+            password: "",                  
             pressed_login: false,
             pressed_register: false,
             pressed_as_a_guest: false,
@@ -25,7 +24,7 @@ class Login extends Component {
         //A function returning TouchableOpacity for 'forgot password' button
     forgotPasswordButton(){
         return (
-            <View style = {{ width: "30%",left: "7%"}}>
+            <View style = {{ width: "30%",left: "67%"}}>
                 <TouchableOpacity
                     title = "forgotpassword"
                     onPress = {()=> this.forgotPassword()}
@@ -49,7 +48,6 @@ class Login extends Component {
 
         //A function returning TouchableOpacity for 'Login' button
     LoginButton() {
-
         return (
             <View style = {styles.buttonViewStyle}>
                 <TouchableOpacity
@@ -76,12 +74,17 @@ class Login extends Component {
         
         //change from this.state.username to the doc('username') in the line below
         firebase.auth().signInWithEmailAndPassword(this.state.username,this.state.password)
-        .then(() => this.props.navigation.navigate('Map',{user : this.state.username}))//Alert.alert("ברוך הבא"))
+        .then(() =>{ 
+            var user = this.state.username;
+            this.resetFields();
+            this.props.navigation.navigate('Map',{user : user})
+        })
         .catch(() => Alert.alert("אחד הנתונים אינם נכונים"))
     }
 
 
-        //A function returning TouchableOpacity for 'Regist' button
+
+        //A function returning TouchableOpacity for 'Register' button
     registerButton() {
 
         return (
@@ -89,14 +92,21 @@ class Login extends Component {
                 <TouchableOpacity
                     title = "register"
                     style={styles.buttonStyle}
-                    onPress = {()=> this.props.navigation.navigate('registration')}
+                    onPress = {()=> this.registerTransfer()}
                 >
                 <Text style = {styles.buttonTextStyle}>הרשם</Text>
                 </TouchableOpacity>
             </View>
         )
     }
-    
+
+
+    registerTransfer(){
+        this.resetFields();
+        this.props.navigation.navigate('Registration');
+    }
+
+
         //A function returning TouchableOpacity for 'Enter as a Guest' button
     guestButton(){
         return (
@@ -104,13 +114,32 @@ class Login extends Component {
                 <TouchableOpacity
                     title = "asAGuest"
                     style={styles.buttonStyle}
-                    onPress = {()=> this.props.navigation.navigate('Map',{ user : "" })}
+                    onPress = {()=> this.enterAsAGuest()}
                 >
                 <Text style = {styles.buttonTextStyle}>הכנס כאורח</Text>
                 </TouchableOpacity>
             </View>
         )
     }
+
+    enterAsAGuest(){
+        this.resetFields();
+        this.props.navigation.navigate('Map',{ user : "" })
+    }
+
+
+
+    resetFields(){
+        this.setState({
+            username: '',
+            password: '',                  
+            pressed_login: false,
+            pressed_register: false,
+            pressed_as_a_guest: false,
+            pressed_forgotten : false
+        })
+    }
+
 
 
     render() {
@@ -129,7 +158,9 @@ class Login extends Component {
                         placeholderTextColor = "#006400"
                         autoCorrect = {false}
                         onChangeText = {username => this.setState({ username })}
-                        value = {this.state.username}        
+                        value = {this.state.username}
+                        onSubmitEditing={() => { this.secondTextInput.focus(); }}
+                        blurOnSubmit={false}        
                     />
                 </View>
 
@@ -141,6 +172,9 @@ class Login extends Component {
                         secureTextEntry = {true}
                         onChangeText = {password => this.setState({ password })}
                         value = {this.state.password}
+                        ref={(input) => { this.secondTextInput = input; }}
+                        onSubmitEditing={ () => this.login() }
+
                     />
                 </View>
                     
@@ -148,7 +182,7 @@ class Login extends Component {
                 <View>{this.LoginButton()}</View>
                 <View>{this.registerButton()}</View>
                 <View>{this.guestButton()}</View>
-
+               
                 </ImageBackground>
             </View>
         )
