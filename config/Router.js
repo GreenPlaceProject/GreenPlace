@@ -14,11 +14,11 @@ const NavigationStack = createStackNavigator({
     },
     registration: { 
         screen: registration ,
-        //navigationOptions:{ headerShown: false }
+        navigationOptions:{ headerShown: false }
     },
     Map: { 
         screen: Map,
-        //navigationOptions:{ headerShown: false }
+        navigationOptions:{ headerShown: false }
     },
     AddLocation: { 
         screen: AddLocation,
