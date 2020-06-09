@@ -3,7 +3,7 @@ import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 
 import Login from '../components/Login';
-import registration from '../components/registration';
+import Registration from '../components/Registration';
 import Map from '../components/Map';
 import AddLocation from '../components/AddLocation';
 
@@ -12,8 +12,8 @@ const NavigationStack = createStackNavigator({
         screen: Login,
         navigationOptions:{ headerShown: false }
     },
-    registration: { 
-        screen: registration ,
+    Registration: { 
+        screen: Registration ,
         navigationOptions:{ headerShown: false }
     },
     Map: { 
