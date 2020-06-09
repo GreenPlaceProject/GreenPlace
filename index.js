@@ -3,12 +3,21 @@
  */
 console.disableYellowBox = true;
 
+import React, {Component} from 'react'
 import {AppRegistry} from 'react-native';
 import {name as appName} from './app.json';
+import Container from './config/Router';
 
-import Login from './components/Login';
-import Registeration from './components/Registeration';
-import AddLocation from './components/AddLocation';
-import Map from './components/Map';
 
-AppRegistry.registerComponent(appName, () => Map);
+AppRegistry.registerComponent(appName, () => App);
+
+
+
+class App extends Component {
+  render() {
+    return (
+      <Container />
+    );
+  }
+}
+
