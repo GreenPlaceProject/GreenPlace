@@ -2,14 +2,23 @@
  * @format
  */
 
+import React, {Component} from 'react'
 import {AppRegistry} from 'react-native';
 import {name as appName} from './app.json';
-
-import Login from './components/Login';
-import Registeration from './components/Registeration';
-import AddLocation from './components/AddLocation';
-import Map from './components/Map';
+import Container from './config/Router';
 
 
+AppRegistry.registerComponent(appName, () => App);
 
-AppRegistry.registerComponent(appName, () => Login);
+
+
+class App extends Component {
+  render() {
+    return (
+      <Container />
+    );
+  }
+}
+
+
+

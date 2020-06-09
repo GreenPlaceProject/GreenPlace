@@ -1,6 +1,9 @@
 import React, {Component } from "react"
 import {View, TextInput, Alert, Image, TouchableOpacity, Text, ImageBackground} from "react-native"
-import firebase from '../config/Firebase'
+import firebase from '../config/Firebase';
+import 'react-navigation'
+
+//  this.props.navigation.state.params.user     <---- getting the params
 
 class Login extends Component {
 
@@ -19,9 +22,8 @@ class Login extends Component {
     } 
 
 
-
+        //A function returning TouchableOpacity for 'forgot password' button
     forgotPasswordButton(){
-
         return (
             <View style = {{ width: "30%",left: "7%"}}>
                 <TouchableOpacity
@@ -33,17 +35,19 @@ class Login extends Component {
              </View>
         )
     }
+        //Forgot password function
     forgotPassword(){
+        if(this.state.username === ""){
+            Alert.alert("אנא מלא שם משתמש");
+            return;
+        }
+
         firebase.auth().sendPasswordResetEmail(this.state.username)
-        .then(function(){
-            Alert.alert("מייל לאיפוס סיסמא נשלח בהצלחה");
-        })
-        .catch(function(){
-            Alert.alert("שם משתמש אינו קיים, אנא נסה שנית");
-        })
+        .then(() => Alert.alert("מייל לאיפוס סיסמא נשלח בהצלחה"))
+        .catch(() => Alert.alert("שם משתמש אינו קיים, אנא נסה שנית"))
     }
 
-
+        //A function returning TouchableOpacity for 'Login' button
     LoginButton() {
 
         return (
@@ -58,6 +62,8 @@ class Login extends Component {
             </View>
         )
     }
+
+        //Login and input validation checks function
     login(){    
 
         if(this.state.username === "" | this.state.password === "")
@@ -65,23 +71,17 @@ class Login extends Component {
             Alert.alert("אחד או יותר מהשדות ריקים");
             return;
         }
+
         //לבדוק ש'משתמש' קיים ולקשר בין משתמש למייל
         
         //change from this.state.username to the doc('username') in the line below
         firebase.auth().signInWithEmailAndPassword(this.state.username,this.state.password)
-        .then(function(){
-            Alert.alert("ברוך הבא");
-        })
-        .catch(function(error){
-            if(error.code === "auth/user-not-found")
-                Alert.alert("שם משתמש אינו קיים");
-            else
-                Alert.alert("הסיסמא שגויה")
-        })
-        
+        .then(() => this.props.navigation.navigate('Map',{user : this.state.username}))//Alert.alert("ברוך הבא"))
+        .catch(() => Alert.alert("אחד הנתונים אינם נכונים"))
     }
 
 
+        //A function returning TouchableOpacity for 'Regist' button
     registerButton() {
 
         return (
@@ -89,37 +89,28 @@ class Login extends Component {
                 <TouchableOpacity
                     title = "register"
                     style={styles.buttonStyle}
-                    onPress = {()=> this.register()}
+                    onPress = {()=> this.props.navigation.navigate('registration')}
                 >
                 <Text style = {styles.buttonTextStyle}>הרשם</Text>
                 </TouchableOpacity>
             </View>
         )
     }
-    register(){
-        Alert.alert("איפוס שדות");
-    }
-
+    
+        //A function returning TouchableOpacity for 'Enter as a Guest' button
     guestButton(){
-
         return (
             <View style = {styles.buttonViewStyle}>
                 <TouchableOpacity
                     title = "asAGuest"
                     style={styles.buttonStyle}
-                    onPress = {()=> this.enterAsAGuest()}
+                    onPress = {()=> this.props.navigation.navigate('Map',{ user : "" })}
                 >
                 <Text style = {styles.buttonTextStyle}>הכנס כאורח</Text>
                 </TouchableOpacity>
             </View>
         )
     }
-    enterAsAGuest(){
-        Alert.alert("איפוס שדות");
-    }
-
-
-
 
 
     render() {
@@ -131,13 +122,14 @@ class Login extends Component {
                 />
 
                 <ImageBackground source={require ('../Images/BackGround.jpg')} imageStyle={{opacity:0.15}} style={{flex: 1,height:"100%"}}>
+                
                 <View style = {styles.InputView}>
                     <TextInput style = {styles.textInputStyle}
                         placeholder = "שם משתמש"
                         placeholderTextColor = "#006400"
                         autoCorrect = {false}
                         onChangeText = {username => this.setState({ username })}
-                        value = {this.state.username}
+                        value = {this.state.username}        
                     />
                 </View>
 
@@ -152,7 +144,7 @@ class Login extends Component {
                     />
                 </View>
                     
-                <View>{this.forgotPasswordButton()}</View>
+                <View>{this.forgotPasswordButton()}</View>  
                 <View>{this.LoginButton()}</View>
                 <View>{this.registerButton()}</View>
                 <View>{this.guestButton()}</View>
@@ -161,11 +153,8 @@ class Login extends Component {
             </View>
         )
     }
+
 }
-
-
-
-
 
 
 
@@ -213,7 +202,6 @@ const styles = {
         color: "#fff"
     }
 }
-
 
 
 

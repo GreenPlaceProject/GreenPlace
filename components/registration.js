@@ -3,7 +3,7 @@ import { TextInput, Button, Alert, Text,TouchableOpacity,ImageBackground } from 
 import { View } from "native-base"
 import { Header } from "react-native-elements"
 import firebase from '../config/Firebase'
-
+import 'react-navigation'
 
 
 export default class Registeration extends Component {
@@ -26,21 +26,16 @@ export default class Registeration extends Component {
                 <TouchableOpacity
                     title = "Return"
                     style={styles.returnButton}
-                    onPress = {()=>this.goBack()}
+                    onPress = {()=>this.props.navigation.goBack()}
                 >
                     <Text style = {styles.returnButtonText}>חזור</Text>
                 </TouchableOpacity>
             </View>
         )
     }
-    goBack(){
-        Alert.alert("איפוס שדות")
-    }
-
 
 
     signUpButton(){
-
 
         return(
             <View style = {styles.buttonViewStyle}>
@@ -54,6 +49,7 @@ export default class Registeration extends Component {
             </View>
         )
     }
+
     signUp(){
         if(this.state.username === "" || this.state.password === ""|| this.state.verPassword === "" || this.state.email === ""){
             Alert.alert("אנא מלא את כל השדות");
@@ -68,18 +64,14 @@ export default class Registeration extends Component {
             Alert.alert("הסיסמאות אינן תואמות");
             return;
         }
+
         //לבדוק שהמשתמש לא קיים ב'אוסף
-        this.usersRef.add({
-            Uid: this.state.username,
-            Username: this.state.username,
-            Email: this.state.email
-        })
 
 
         firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
         .then(function(user){
             Alert.alert("נרשם בהצלחה");
-            // להוסיף 'שם משתשמש' לאוסף
+
             //לעבור למסך אחר עם פרמטר (מפות) כמשתמש רשום
         })
         .catch(function(error) {
@@ -89,9 +81,10 @@ export default class Registeration extends Component {
                 Alert.alert("פורמט האימייל אינו תקין")
             else
                 Alert.alert("אנא נסה שנית");
+            
         })
     }
-
+    
 
 
 
