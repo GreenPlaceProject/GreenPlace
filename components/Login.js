@@ -1,9 +1,9 @@
 import React, {Component } from "react"
-import {View, TextInput, Alert, Image, TouchableOpacity, Text, ImageBackground} from "react-native"
+import {View, TextInput, Alert, Image, TouchableOpacity, Text, ImageBackground, ScrollView} from "react-native"
 import firebase from '../config/Firebase';
 import 'react-navigation'
-
-//  this.props.navigation.state.params.user     <---- getting the params
+import Snackbar from 'react-native-snackbar';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 class Login extends Component {
 
@@ -37,7 +37,10 @@ class Login extends Component {
         //Forgot password function
     forgotPassword(){
         if(this.state.username === ""){
-            Alert.alert("אנא מלא שם משתמש");
+            Snackbar.show({
+                text: 'אנא מלא שם משתמש',
+                duration: Snackbar.LENGTH_SHORT,
+            });
             return;
         }
 
@@ -66,7 +69,10 @@ class Login extends Component {
 
         if(this.state.username === "" | this.state.password === "")
         {
-            Alert.alert("אחד או יותר מהשדות ריקים");
+            Snackbar.show({
+                text: "אחד או יותר מהשדות ריקים",
+                duration: Snackbar.LENGTH_SHORT,
+            });
             return;
         }
 
@@ -79,7 +85,10 @@ class Login extends Component {
             this.resetFields();
             this.props.navigation.navigate('Map',{user : user})
         })
-        .catch(() => Alert.alert("אחד הנתונים אינם נכונים"))
+        .catch(() =>Snackbar.show({
+            text: "אחד הנתונים אינם נכונים",
+            duration: Snackbar.LENGTH_SHORT,
+        }))
     }
 
 
@@ -144,45 +153,47 @@ class Login extends Component {
 
     render() {
         return(
-            <View height = "100%" width = "100%">
+            <View height = "100%" width = "100%" style = {{flex:1}}>
                 <Image
                     source={require ("../Images/App_Logo.jpg")}
                     style={styles.image}
                 />
 
                 <ImageBackground source={require ('../Images/BackGround.jpg')} imageStyle={{opacity:0.15}} style={{flex: 1,height:"100%"}}>
-                
-                <View style = {styles.InputView}>
-                    <TextInput style = {styles.textInputStyle}
-                        placeholder = "שם משתמש"
-                        placeholderTextColor = "#006400"
-                        autoCorrect = {false}
-                        onChangeText = {username => this.setState({ username })}
-                        value = {this.state.username}
-                        onSubmitEditing={() => { this.secondTextInput.focus(); }}
-                        blurOnSubmit={false}        
-                    />
-                </View>
 
-                <View style = {styles.inputView}>
-                    <TextInput style = {styles.textInputStyle}
-                        placeholder = "סיסמא"
-                        placeholderTextColor = "#006400"
-                        autoCorrect = {false}
-                        secureTextEntry = {true}
-                        onChangeText = {password => this.setState({ password })}
-                        value = {this.state.password}
-                        ref={(input) => { this.secondTextInput = input; }}
-                        onSubmitEditing={ () => this.login() }
-
-                    />
-                </View>
+                    <KeyboardAwareScrollView enableOnAndroid = "true" >
                     
-                <View>{this.forgotPasswordButton()}</View>  
-                <View>{this.LoginButton()}</View>
-                <View>{this.registerButton()}</View>
-                <View>{this.guestButton()}</View>
+                        <View style = {styles.InputView}>
+                            <TextInput style = {styles.textInputStyle}
+                                placeholder = "שם משתמש"
+                                placeholderTextColor = "#006400"
+                                autoCorrect = {false}
+                                onChangeText = {username => this.setState({ username })}
+                                value = {this.state.username}       
+                                onSubmitEditing={() => { this.secondTextInput.focus(); }}
+                                blurOnSubmit={false}        
+                            />
+                        </View>
+
+                        <View style = {styles.inputView}>
+                            <TextInput style = {styles.textInputStyle}
+                                placeholder = "סיסמא"
+                                placeholderTextColor = "#006400"
+                                autoCorrect = {false}
+                                secureTextEntry = {true}
+                                onChangeText = {password => this.setState({ password })}
+                                value = {this.state.password}
+                                ref={(input) => { this.secondTextInput = input; }}
+                                onSubmitEditing={ () => this.login() }
+                            />
+                        </View>
+                        
+                        <View>{this.forgotPasswordButton()}</View>  
+                        <View>{this.LoginButton()}</View>
+                        <View>{this.registerButton()}</View>
+                        <View>{this.guestButton()}</View>
                
+                    </KeyboardAwareScrollView>
                 </ImageBackground>
             </View>
         )
