@@ -1,9 +1,11 @@
 import React, { Component } from "react"
-import { TextInput, Button, Alert, Text,TouchableOpacity,ImageBackground, KeyboardAvoidingView,ScrollView  } from "react-native"
+import { TextInput, Text, TouchableOpacity, ImageBackground } from "react-native"
 import { View } from "native-base"
 import { Header } from "react-native-elements"
 import firebase from '../config/Firebase'
 import 'react-navigation'
+import Snackbar from 'react-native-snackbar';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 
 export default class Registeration extends Component {
@@ -52,16 +54,25 @@ export default class Registeration extends Component {
 
     signUp(){
         if(this.state.username === "" || this.state.password === ""|| this.state.verPassword === "" || this.state.email === ""){
-            Alert.alert("אנא מלא את כל השדות");
+            Snackbar.show({
+                text: "אנא מלא את כל השדות",
+                duration: Snackbar.LENGTH_SHORT,
+            });
             return;
         }
         if(this.state.password.length < 6){
-            Alert.alert("אנא הכנס סיסמא בעלת לפחות 6 תווים");
+            Snackbar.show({
+                text: "אנא הכנס סיסמא בעלת לפחות 6 תווים",
+                duration: Snackbar.LENGTH_SHORT,
+            });
             return;
         }
         if(this.state.password !== this.state.verPassword )
         {
-            Alert.alert("הסיסמאות אינן תואמות");
+            Snackbar.show({
+                text: "הסיסמאות אינן תואמות",
+                duration: Snackbar.LENGTH_SHORT,
+            });
             return;
         }
 
@@ -72,16 +83,28 @@ export default class Registeration extends Component {
         .then(() =>{
             var user = this.state.username;
             this.resetFields();
-            Alert.alert("הרשמה הושלמה");
+            Snackbar.show({
+                text: "הרשמה הושלמה בהצלחה",
+                duration: Snackbar.LENGTH_SHORT,
+            });
             this.props.navigation.navigate('Map',{user : user})
         })
         .catch((error) => {
             if(error.message === "The email address is already in use by another account.")
-                Alert.alert("המייל רשום")
+                Snackbar.show({
+                    text: "מייל זה הינו כבר רשום במערכת",
+                    duration: Snackbar.LENGTH_SHORT,
+                });
             else if(error.message === "The email address is badly formatted.")
-                Alert.alert("פורמט האימייל אינו תקין")
+                Snackbar.show({
+                    text: "פורמט האימייל אינו תקין",
+                    duration: Snackbar.LENGTH_SHORT,
+                });
             else
-                Alert.alert("אנא נסה שנית");
+                Snackbar.show({
+                    text: "קרתה תקלה, אנא נסה שנית",
+                    duration: Snackbar.LENGTH_SHORT,
+                });
             
         })
     }
@@ -102,8 +125,8 @@ export default class Registeration extends Component {
     render(){
         return(
             <ImageBackground source={require ('../Images/BackGround.jpg')} imageStyle={{opacity:0.15}} style={{flex: 1,height:"100%"}}>
-            <KeyboardAvoidingView keyboardVerticalOffset={-550} >
-            <ScrollView>
+            <KeyboardAwareScrollView enableOnAndroid = "true" >
+          
                 <Header 
                     centerComponent = {{text: 'הרשמה' ,style: styles.centerComponentStyle }}
                     backgroundColor="#e6ffe6"
@@ -169,10 +192,11 @@ export default class Registeration extends Component {
                         onSubmitEditing={ () => this.signUp() }
                     />
                 </View>
+                
 
                 <View>{this.signUpButton()}</View>
-                </ScrollView>
-                </KeyboardAvoidingView>
+              
+                </KeyboardAwareScrollView>
             </ImageBackground>
         )
     }
