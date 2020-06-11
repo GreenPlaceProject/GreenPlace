@@ -77,7 +77,7 @@ class Login extends Component {
         .then(() =>{ 
             var user = this.state.username;
             this.resetFields();
-            this.props.navigation.navigate('Map',{user : user})
+            this.props.navigation.navigate('Map',{user : user, btn : "התנתק"})
         })
         .catch(() => Alert.alert("אחד הנתונים אינם נכונים"))
     }
@@ -124,7 +124,7 @@ class Login extends Component {
 
     enterAsAGuest(){
         this.resetFields();
-        this.props.navigation.navigate('Map',{ user : "" })
+        this.props.navigation.navigate('Map',{ user : "" , btn : "חזור"})
     }
 
 

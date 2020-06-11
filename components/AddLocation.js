@@ -1,12 +1,14 @@
 import React, { Component } from "react";
 import { View , TextInput , Text , ImageBackground , Picker, TouchableOpacity,Alert } from "react-native";
 import { Header } from "react-native-elements"
+import InputScrollView from 'react-native-input-scroll-view';
 
+import 'react-navigation'
 
 
 class AddLocationForm extends Component{
-    constructor(){
-        super();
+    constructor(props){
+        super(props);
         this.state = {
             place: "",
             description: "",
@@ -32,7 +34,8 @@ class AddLocationForm extends Component{
         )
     }
     goBack(){
-        Alert.alert("לא לשכוח למחוק שדות")
+        this.resetFields();
+        this.props.navigation.goBack();
     }
 
     updateButton(){
@@ -49,18 +52,28 @@ class AddLocationForm extends Component{
         )
     }
     update(){
+        //Alert.alert(""+this.props.navigation.state.params.latitude); בדיקת הגעת משתנים
         if(this.state.place === "" || this.state.selectedLabel === "1"){
             Alert.alert("אנא מלא את כל השדות");
             return;
         }
-        Alert.alert("איפוס שדות אחרי עדכון")
+        this.resetFields();
         //firestore??
+        this.props.navigation.navigate('Map');
+    }
+
+    resetFields(){
+        this.setState({
+            place: "",
+            description: "",
+            selectedLabel: "1"
+        })
     }
 
 
     render(){
         return(
-            <ImageBackground source={require ('../Images/BackGround.jpg')} imageStyle={{opacity:0.17}} style={{flex: 1,height:"100%"}}>
+            <ImageBackground source={require ('../Images/BackGround.jpg')} imageStyle={{opacity:0.15}} style={{flex: 1,height:"100%"}}>
                 <View>
                     <Header 
                         backgroundColor="#e6ffe6"
@@ -105,6 +118,8 @@ class AddLocationForm extends Component{
                     <TextInput style={styles.textInputStyle}
                         textAlign = "center"
                         placeholder = {"תיאור"}
+                        maxHeight={145}
+                        autoGrow={true}                    
                         placeholderTextColor = "#006400"
                         autoCorrect = {false}
                         onChangeText = {description => this.setState({description})}

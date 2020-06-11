@@ -107,7 +107,7 @@ export default class Registeration extends Component {
                 <Header 
                     centerComponent = {{text: 'הרשמה' ,style: styles.centerComponentStyle }}
                     backgroundColor="#e6ffe6"
-                    leftComponent = {this.returnButton()}
+                    rightComponent = {this.returnButton()}
                 />
 
                 <View style={styles.inputView}>

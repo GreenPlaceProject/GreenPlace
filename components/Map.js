@@ -1,24 +1,26 @@
 import React, { Component } from "react"
-import { Text,TouchableOpacity,Picker} from "react-native"
+import { Text,TouchableOpacity,Picker, Alert} from "react-native"
 import { View, Button } from "native-base"
 import { Header} from "react-native-elements"
 import MapView , {PROVIDER_GOOGLE,Marker, Callout} from 'react-native-maps'
 import firebase from '../config/Firebase'
-
+import 'react-navigation'
 
 class Map extends Component{
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
-            pickerSelectedLabel:''
-
+            pickerSelectedLabel:'',
+            latitude:'',
+            longitude:''
         };
     }
 
     func(){
-        <Marker
-            coordinate={{latitude:31.756106, longitude:35.165088}}
-        ></Marker>  
+        return     (    <Marker
+        coordinate={{latitude:31.756106, longitude:35.165088}}
+    ></Marker> )
+ 
     }
 
 
@@ -26,6 +28,13 @@ class Map extends Component{
     show=(value)=>
     {
         this.setState({pickerSelectedLabel:value});
+    }
+
+    function(event){
+        this.setState({
+            latitude: event.nativeEvent.coordinate.latitude,
+            longitude: event.nativeEvent.coordinate.longitude
+        });
     }
 
     /*func()
@@ -42,41 +51,57 @@ class Map extends Component{
         .then(function (){ Alert.alert("no"); })
     }*/
 
+    headerButton()
+    {
+        return(<TouchableOpacity
+                title = "signOut"
+                style={styles.returnButton}
+                onPress={()=>this.buttonUser()}>
+                <Text style = {styles.returnButtonText}>{this.props.navigation.state.params.btn}</Text>
+            </TouchableOpacity>)
+    }
+
+    buttonUser()
+    {
+        if(this.props.navigation.state.params.user === "")
+            this.props.navigation.goBack();
+        else
+            firebase.auth().signOut()
+            .then(()=>{
+                Alert.alert("ההתנתקות הצליחה")
+                this.props.navigation.navigate('Login')
+            })
+            .catch(()=> Alert.alert("ההתנתקות נכשלה"));
+
+        //this.props.navigation.navigate('AddLocation', {latitude:this.state.latitude, longitude:this.state.longitude});
+    }
+
     render(){
         return(
             <View>
                 <Header 
                     backgroundColor="#e6ffe6"
-                    leftComponent = { <TouchableOpacity
-                                            title = "signIn"
-                                            style={styles.returnButton}
-                                            //onPress={()=>this.func()}
-                                        >
-                                        <Text style = {styles.returnButtonText}>התנתק</Text>
-                                        </TouchableOpacity>
-
-
-                    }   
+                    rightComponent = {()=>this.headerButton()}
                 >  
                 </Header>
-                <View style={{width:300 , left:75}}>
+                <View style={{width:"70%" , left:"1%"}}>
                     <Picker 
                         selectedValue={this.state.pickerSelectedLabel}
                         onValueChange={this.show.bind()}
                         style={{position:'absolute',left:0 , bottom:10 , right:5}}>
                         <Picker.Item label="בחר קטגוריה" value="1" ></Picker.Item>
-                        <Picker.Item label="עץ פרי" value="2"></Picker.Item>
-                        <Picker.Item label="צמח מאכל ומרפא" value="3"></Picker.Item>
+                        <Picker.Item label="אתר פריחה" value="2"></Picker.Item>
+                        <Picker.Item label="אתר צפרות וצפיית חיות בר" value="3"></Picker.Item>
                         <Picker.Item label="גינה ציבורית" value="4"></Picker.Item>
-                        <Picker.Item label="חנות יד שניה" value="5"></Picker.Item>
-                        <Picker.Item label="גינה קהילתית" value="6"></Picker.Item>
-                        <Picker.Item label="אתר פריחה" value="7"></Picker.Item>
-                        <Picker.Item label="ספריית רחוב" value="8"></Picker.Item>
-                        <Picker.Item label="חנות טבע" value="9"></Picker.Item>
-                        <Picker.Item label="קומפוסטר" value="10"></Picker.Item>
+                        <Picker.Item label="גינה קהילתית" value="5"></Picker.Item>
+                        <Picker.Item label="חנות אופניים" value="6"></Picker.Item>
+                        <Picker.Item label="חנות טבע" value="7"></Picker.Item>
+                        <Picker.Item label="חנות יד שניה" value="8"></Picker.Item>
+                        <Picker.Item label="ספריית רחוב" value="9"></Picker.Item>
+                        <Picker.Item label="עץ פרי" value="10"></Picker.Item>
                         <Picker.Item label="פח מיחזור" value="11"></Picker.Item>
-                        <Picker.Item label="אתר צפרות וצפיית חיות בר" value="12"></Picker.Item>
-                        <Picker.Item label="חנות אופניים" value="13"></Picker.Item>
+                        <Picker.Item label="צמח מאכל ומרפא" value="12"></Picker.Item>
+                        <Picker.Item label="קומפוסטר" value="13"></Picker.Item>  
                     </Picker>
                     
                 </View>
@@ -85,20 +110,15 @@ class Map extends Component{
                         provider={PROVIDER_GOOGLE}
                         style={styles.map}
                         region={{
-                            latitude: 31.758106,
+                            latitude: 31.756106,
                             longitude: 35.165088,
-                            latitudeDelta: 0.04,
+                            latitudeDelta: 0.014,
                             longitudeDelta: 0.001
                         }}
                         onPress={()=>this.func()}
                         >
-                        <Marker
-                            coordinate={{latitude: 31.756106,
-                                        longitude: 35.165088,}}>
-                            <Callout>
-                                <Button title="jhg"></Button>
-                            </Callout>
-                        </Marker>
+                       {this.func()}
+                        
                     </MapView>
                 </View>
             </View>
