@@ -87,7 +87,7 @@ export default class Registeration extends Component {
                 text: "הרשמה הושלמה בהצלחה",
                 duration: Snackbar.LENGTH_SHORT,
             });
-            this.props.navigation.navigate('Map',{user : user})
+            this.props.navigation.navigate('Map',{user : user , btn : "התנתק"})
         })
         .catch((error) => {
             if(error.message === "The email address is already in use by another account.")

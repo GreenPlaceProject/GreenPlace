@@ -5,6 +5,8 @@ import { Header} from "react-native-elements"
 import MapView , {PROVIDER_GOOGLE,Marker, Callout} from 'react-native-maps'
 import firebase from '../config/Firebase'
 import 'react-navigation'
+import { NavigationContext } from "react-navigation"
+import { color } from "react-native-reanimated"
 
 class Map extends Component{
     constructor(props) {
@@ -16,11 +18,15 @@ class Map extends Component{
         };
     }
 
-    func(){
+    /*func(){
         return     (    <Marker
         coordinate={{latitude:31.756106, longitude:35.165088}}
     ></Marker> )
  
+    }*/
+
+    next(){
+
     }
 
 
@@ -115,9 +121,45 @@ class Map extends Component{
                             latitudeDelta: 0.014,
                             longitudeDelta: 0.001
                         }}
-                        onPress={()=>this.func()}
+                        //onPress={()=>this.func()}
                         >
-                       {this.func()}
+                       <Marker
+                            coordinate={{latitude:31.756106, longitude:35.165088}}>
+
+                            <Callout onPress={()=>this.props.navigation.navigate('AddLocation')}><Button><Text>הוספת מקום</Text></Button></Callout>
+                        </Marker> 
+
+                        <Marker
+                            coordinate={{latitude:31.756806, longitude:35.165088}}>
+
+                            <Callout onPress={()=>this.props.navigation.navigate('AddLocation')}><Button><Text>הוספת מקום</Text></Button></Callout>
+                        </Marker> 
+
+                        <Marker
+                            coordinate={{latitude:31.756106, longitude:35.165988}}>
+
+                            <Callout onPress={()=>this.props.navigation.navigate('AddLocation')}><Button><Text>הוספת מקום</Text></Button></Callout>
+                        </Marker> 
+
+                        <Marker
+                            coordinate={{latitude:31.756306, longitude:35.165988}}>
+
+                            <Callout><Text>גינה קהילתית</Text></Callout>
+                        </Marker> 
+
+                        <Marker
+                            coordinate={{latitude:31.756106, longitude:35.166988}}>
+
+                            <Callout><Text>חנות טבע</Text></Callout>
+                        </Marker> 
+
+
+
+
+
+
+
+
                         
                     </MapView>
                 </View>
