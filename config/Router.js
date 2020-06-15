@@ -6,6 +6,7 @@ import Login from '../components/Login';
 import Registration from '../components/Registration';
 import Map from '../components/Map';
 import AddLocation from '../components/AddLocation';
+import AdminScreen from '../components/AdminScreen';
 
 const NavigationStack = createStackNavigator({
     Login: { 
@@ -24,6 +25,10 @@ const NavigationStack = createStackNavigator({
         screen: AddLocation,
         navigationOptions:{ headerShown: false }
     },
+    AdminScreen: {
+        screen: AdminScreen,
+        navigationOptions: { headerShown: false}
+    }
 });
 
 

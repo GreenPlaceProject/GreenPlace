@@ -49,7 +49,6 @@ class Map extends Component{
             Name: "something"
         })
         .then(function(){ Alert.alert("ok"); })
-
         firebase.firestore().collection('Users').doc('IDAN').set({
             Name: "idan",
             email: "idan@co.com"

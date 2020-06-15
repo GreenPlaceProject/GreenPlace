@@ -1,17 +1,17 @@
 import React, {Component } from "react"
-import {View, TextInput, Alert, Image, TouchableOpacity, Text, ImageBackground, ScrollView} from "react-native"
+import {View, TextInput, Image, TouchableOpacity, Text, ImageBackground} from "react-native"
 import firebase from '../config/Firebase';
 import 'react-navigation'
 import Snackbar from 'react-native-snackbar';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
-class Login extends Component {
+export default class Login extends Component {
 
     constructor() {
         super();
-        this.usersRef = firebase.firestore().collection('Users');
+        this.usersRef = firebase.database().ref().child('Users');
         this.state = {
-            username: "",
+            email: "",
             password: "",                  
             pressed_login: false,
             pressed_register: false,
@@ -36,17 +36,26 @@ class Login extends Component {
     }
         //Forgot password function
     forgotPassword(){
-        if(this.state.username === ""){
+
+        if(this.state.email === ""){
             Snackbar.show({
-                text: 'אנא מלא שם משתמש',
+                text: 'אנא הכנס מייל',
                 duration: Snackbar.LENGTH_SHORT,
             });
             return;
         }
 
-        firebase.auth().sendPasswordResetEmail(this.state.username)
-        .then(() => Alert.alert("מייל לאיפוס סיסמא נשלח בהצלחה"))
-        .catch(() => Alert.alert("שם משתמש אינו קיים, אנא נסה שנית"))
+        firebase.auth().sendPasswordResetEmail(this.state.email)
+        .then(() => Snackbar.show({
+            text: 'מייל לאיפוס סיסמא נשלח בהצלחה',
+            duration: Snackbar.LENGTH_SHORT,
+            })
+        )
+        .catch(() => Snackbar.show({
+            text: 'מייל לאיפוס סיסמא נשלח בהצלחה',
+            duration: Snackbar.LENGTH_SHORT,
+            })
+        )
     }
 
         //A function returning TouchableOpacity for 'Login' button
@@ -67,31 +76,31 @@ class Login extends Component {
         //Login and input validation checks function
     login(){    
 
-        if(this.state.username === "" | this.state.password === "")
+        if(this.state.email === "" | this.state.password === "")
         {
             Snackbar.show({
                 text: "אחד או יותר מהשדות ריקים",
                 duration: Snackbar.LENGTH_SHORT,
             });
             return;
-        }
+        } 
 
-        //לבדוק ש'משתמש' קיים ולקשר בין משתמש למייל
-        
-        //change from this.state.username to the doc('username') in the line below
-        firebase.auth().signInWithEmailAndPassword(this.state.username,this.state.password)
+        firebase.auth().signInWithEmailAndPassword(this.state.email,this.state.password)
         .then(() =>{ 
-            var user = this.state.username;
-            this.resetFields();
-            this.props.navigation.navigate('Map',{user : user, btn : "התנתק"})
+            this.usersRef.on('value',(snap)=>{
+                snap.forEach((child) =>{
+                    if(child.val().email === this.state.email){
+                        this.resetFields();
+                        this.props.navigation.navigate('Map',{user : child.val().username, btn : "התנתק"})                        
+                    }
+                })
+            })
         })
         .catch(() =>Snackbar.show({
             text: "אחד הנתונים אינם נכונים",
             duration: Snackbar.LENGTH_SHORT,
         }))
     }
-
-
 
         //A function returning TouchableOpacity for 'Register' button
     registerButton() {
@@ -115,7 +124,6 @@ class Login extends Component {
         this.props.navigation.navigate('Registration');
     }
 
-
         //A function returning TouchableOpacity for 'Enter as a Guest' button
     guestButton(){
         return (
@@ -138,9 +146,35 @@ class Login extends Component {
 
 
 
+
+    adminButton(){
+        return (
+            <View style = {styles.buttonViewStyle}>
+                <TouchableOpacity
+                    title = "admin"
+                    style={styles.buttonStyle}
+                    onPress = {()=> this.toAdminPage()}
+                >
+                <Text style = {styles.buttonTextStyle}>כניסה לאדמין</Text>
+                </TouchableOpacity>
+            </View>
+        )
+    }
+
+    toAdminPage(){
+        this.props.navigation.navigate('AdminScreen');
+    }
+
+
+
+
+
+
+
+
     resetFields(){
         this.setState({
-            username: '',
+            email: '',
             password: '',                  
             pressed_login: false,
             pressed_register: false,
@@ -168,8 +202,8 @@ class Login extends Component {
                                 placeholder = "שם משתמש"
                                 placeholderTextColor = "#006400"
                                 autoCorrect = {false}
-                                onChangeText = {username => this.setState({ username })}
-                                value = {this.state.username}       
+                                onChangeText = {email => this.setState({ email })}
+                                value = {this.state.email}       
                                 onSubmitEditing={() => { this.secondTextInput.focus(); }}
                                 blurOnSubmit={false}        
                             />
@@ -192,6 +226,7 @@ class Login extends Component {
                         <View>{this.LoginButton()}</View>
                         <View>{this.registerButton()}</View>
                         <View>{this.guestButton()}</View>
+                        <View>{this.adminButton()}</View>
                
                     </KeyboardAwareScrollView>
                 </ImageBackground>
@@ -248,6 +283,3 @@ const styles = {
     }
 }
 
-
-
-export default Login;
