@@ -11,7 +11,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 export default class Registeration extends Component {
     constructor() {
         super();
-        this.usersRef = firebase.firestore().collection('Users')
+        this.usersRef = firebase.database().ref().child('Users');
         this.state = {
             username: "",
             password: "",
@@ -76,17 +76,39 @@ export default class Registeration extends Component {
             return;
         }
 
-        //לבדוק שהמשתמש לא קיים ב'אוסף
-
+        var userExists = false;                 //Checking if the user already exists in the system
+        this.usersRef.on('value',(snap)=>{  
+            snap.forEach((child) =>{
+                if(child.val().username === this.state.username)
+                    userExists = true;
+            })
+            
+        })
+        if(userExists){
+            Snackbar.show({
+                text: "שם משתמש כבר קיים במערכת, אנא הכנס שם משתמש אחר",
+                duration: Snackbar.LENGTH_SHORT,
+            });
+            return;
+        }
+            
 
         firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
         .then(() =>{
             var user = this.state.username;
+
+            this.usersRef.push({                //Adding username and password to DB.
+                email: this.state.email,
+                username: this.state.username
+            })
+
             this.resetFields();
+
             Snackbar.show({
-                text: "הרשמה הושלמה בהצלחה",
+                text: "הרשמה בוצעה",
                 duration: Snackbar.LENGTH_SHORT,
             });
+
             this.props.navigation.navigate('Map',{user : user , btn : "התנתק"})
         })
         .catch((error) => {

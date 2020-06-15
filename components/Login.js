@@ -15,8 +15,7 @@ export default class Login extends Component {
             password: "",                  
             pressed_login: false,
             pressed_register: false,
-            pressed_as_a_guest: false,
-            pressed_forgotten : false
+            pressed_as_a_guest: false
         }
     } 
 
@@ -39,7 +38,7 @@ export default class Login extends Component {
 
         if(this.state.email === ""){
             Snackbar.show({
-                text: 'אנא הכנס מייל',
+                text: "אנא הכנס דוא'ל",
                 duration: Snackbar.LENGTH_SHORT,
             });
             return;
@@ -56,6 +55,7 @@ export default class Login extends Component {
             duration: Snackbar.LENGTH_SHORT,
             })
         )
+        this.resetFields();
     }
 
         //A function returning TouchableOpacity for 'Login' button
@@ -199,7 +199,7 @@ export default class Login extends Component {
                     
                         <View style = {styles.InputView}>
                             <TextInput style = {styles.textInputStyle}
-                                placeholder = "שם משתמש"
+                                placeholder = "דוא'ל"
                                 placeholderTextColor = "#006400"
                                 autoCorrect = {false}
                                 onChangeText = {email => this.setState({ email })}
