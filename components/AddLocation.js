@@ -35,7 +35,7 @@ class AddLocationForm extends Component{
     }
     goBack(){
         this.resetFields();
-        this.props.navigation.goBack();
+        this.props.navigation.navigate('Map');
     }
 
     updateButton(){
@@ -52,7 +52,7 @@ class AddLocationForm extends Component{
         )
     }
     update(){
-        //Alert.alert(""+this.props.navigation.state.params.latitude); בדיקת הגעת משתנים
+        Alert.alert(""+this.props.navigation.state.params.place.name);// בדיקת הגעת משתנים
         if(this.state.place === "" || this.state.selectedLabel === "1"){
             Alert.alert("אנא מלא את כל השדות");
             return;
@@ -73,6 +73,7 @@ class AddLocationForm extends Component{
 
     render(){
         return(
+
             <ImageBackground source={require ('../Images/BackGround.jpg')} imageStyle={{opacity:0.15}} style={{flex: 1,height:"100%"}}>
                 <View>
                     <Header 
