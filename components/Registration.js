@@ -4,14 +4,16 @@ import { View } from "native-base"
 import { Header } from "react-native-elements"
 import firebase from '../config/Firebase'
 import 'react-navigation'
-import Snackbar from 'react-native-snackbar';
+import Snackbar from 'react-native-snackbar'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import DropdownAlert from 'react-native-dropdownalert'
+
 
 
 export default class Registeration extends Component {
     constructor() {
         super();
-        this.usersRef = firebase.firestore().collection('Users')
+        this.usersRef = firebase.database().ref().child('Users');
         this.state = {
             username: "",
             password: "",
@@ -54,58 +56,52 @@ export default class Registeration extends Component {
 
     signUp(){
         if(this.state.username === "" || this.state.password === ""|| this.state.verPassword === "" || this.state.email === ""){
-            Snackbar.show({
-                text: "אנא מלא את כל השדות",
-                duration: Snackbar.LENGTH_SHORT,
-            });
+            this.dropDownAlertRef.alertWithType('warn', '', 'אנא מלא את כל השדות');
             return;
         }
         if(this.state.password.length < 6){
-            Snackbar.show({
-                text: "אנא הכנס סיסמא בעלת לפחות 6 תווים",
-                duration: Snackbar.LENGTH_SHORT,
-            });
+            this.dropDownAlertRef.alertWithType('warn', '', 'אנא הכנס סיסמא בעלת לפחות 6 תווים');
             return;
         }
         if(this.state.password !== this.state.verPassword )
         {
-            Snackbar.show({
-                text: "הסיסמאות אינן תואמות",
-                duration: Snackbar.LENGTH_SHORT,
-            });
+            this.dropDownAlertRef.alertWithType('warn', '', 'הסיסמאות אינן תואמות');
             return;
         }
 
-        //לבדוק שהמשתמש לא קיים ב'אוסף
-
+        var userExists = false;                 //Checking if the user already exists in the system
+        this.usersRef.on('value',(snap)=>{  
+            snap.forEach((child) =>{
+                if(child.val().username === this.state.username)
+                    userExists = true;
+            })
+        })
+        
+        if(userExists){
+            this.dropDownAlertRef.alertWithType('warn', '', 'שם משתמש כבר קיים במערכת, אנא הכנס שם משתמש אחר');
+            return;
+        }
+            
 
         firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
         .then(() =>{
             var user = this.state.username;
+
+            this.usersRef.push({                //Adding username and password to DB.
+                email: this.state.email,
+                username: this.state.username
+            })
+
             this.resetFields();
-            Snackbar.show({
-                text: "הרשמה הושלמה בהצלחה",
-                duration: Snackbar.LENGTH_SHORT,
-            });
             this.props.navigation.navigate('Map',{user : user , btn : "התנתק"})
         })
         .catch((error) => {
             if(error.message === "The email address is already in use by another account.")
-                Snackbar.show({
-                    text: "מייל זה הינו כבר רשום במערכת",
-                    duration: Snackbar.LENGTH_SHORT,
-                });
+                this.dropDownAlertRef.alertWithType('warn', '', "דוא'ל זה הינו כבר רשום במערכת, אנא הכנס דוא'ל אחר");    
             else if(error.message === "The email address is badly formatted.")
-                Snackbar.show({
-                    text: "פורמט האימייל אינו תקין",
-                    duration: Snackbar.LENGTH_SHORT,
-                });
+                this.dropDownAlertRef.alertWithType('warn', '', 'פורמט האימייל אינו תקין');            
             else
-                Snackbar.show({
-                    text: "קרתה תקלה, אנא נסה שנית",
-                    duration: Snackbar.LENGTH_SHORT,
-                });
-            
+                this.dropDownAlertRef.alertWithType('warn', '', 'קרתה תקלה, אנא נסה שנית');
         })
     }
     
@@ -197,6 +193,9 @@ export default class Registeration extends Component {
                 <View>{this.signUpButton()}</View>
               
                 </KeyboardAwareScrollView>
+                <View style={{ position: "absolute", top: "0%", right: "25%", width: "50%", height: "40%" }}>
+                    <DropdownAlert ref={ref => this.dropDownAlertRef = ref} />
+                </View>
             </ImageBackground>
         )
     }
