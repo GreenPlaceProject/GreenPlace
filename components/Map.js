@@ -5,8 +5,7 @@ import { Header} from "react-native-elements"
 import MapView , {PROVIDER_GOOGLE,Marker, Callout} from 'react-native-maps'
 import firebase from '../config/Firebase'
 import 'react-navigation'
-import { NavigationContext } from "react-navigation"
-import { color } from "react-native-reanimated"
+
 
 class Map extends Component{
     constructor(props) {
@@ -14,47 +13,67 @@ class Map extends Component{
         this.state = {
             pickerSelectedLabel:'',
             latitude:'',
-            longitude:''
+            longitude:'',
+            myCoordinates: [{latitude:31.756106, longitude:35.165988, name: "נועם",description: "שלום", type:"dsf"},{latitude:31.756116, longitude:35.165088, name: 3,description: "blabla", type:"dsf"}]
         };
     }
 
-    /*func(){
-        return     (    <Marker
-        coordinate={{latitude:31.756106, longitude:35.165088}}
-    ></Marker> )
- 
-    }*/
-
-    next(){
-
+    clickOnMap(){
+        Alert.alert( 'הוספת מקום','האם אתה רוצה להוסיף את המקום למפה?',
+        [{text: 'לא', onPress: ()=> {return}},
+        {text: 'כן', onPress: () => this.yesPressed()}])
     }
 
+    yesPressed(){
+        if(this.props.navigation.state.params.user === "")
+            Alert.alert("נא להרשם/להתחבר כדי להוסיף מקום למפה");
+        else
+            this.props.navigation.navigate('AddLocation',{latlng: {latitude: this.state.latitude, longitude: this.state.longitude}})
+    }
 
+    displayCoordinates(myCoordinates) {
+        return(
+            myCoordinates.map((coordinate, i) => (
+                
+			    <Marker coordinate = {{latitude: coordinate.latitude, longitude: coordinate.longitude}}
+                onPress={(event)=>this.showPlace(event)}
+                
+                >
+                </Marker>
+            ))
+        )
+    }
+
+    showPlace(event){
+        var place = this.state.myCoordinates.filter((coordinate,i) => {
+            return(coordinate.latitude==event.nativeEvent.coordinate.latitude && coordinate.longitude==event.nativeEvent.coordinate.longitude)
+
+        });
+        Alert.alert(""+place[0].name, ""+place[0].description,
+        [{text: 'יציאה', onPress: ()=> {return}},
+        {text: 'מחיקת מקום', onPress: ()=> this.deletePlace()},
+        {text: 'עריכת מקום', onPress: (place) => this.updatePlace(place)}])
+    }
+
+    updatePlace(place){
+        if(this.props.navigation.state.params.user === "")
+            Alert.alert("נא להרשם/להתחבר כדי לערוך מקום במפה");
+        else
+            this.props.navigation.navigate('AddLocation', {place: place[0]});
+    }
+
+    deletePlace(){
+        if(this.props.navigation.state.params.user === "")
+            Alert.alert("נא להרשם/להתחבר כדי למחוק מקום מהמפה");
+        else
+            return;
+    }
 
     show=(value)=>
     {
         this.setState({pickerSelectedLabel:value});
     }
 
-    function(event){
-        this.setState({
-            latitude: event.nativeEvent.coordinate.latitude,
-            longitude: event.nativeEvent.coordinate.longitude
-        });
-    }
-
-    /*func()
-    {
-        firebase.firestore().collection('Users').add({
-            Name: "something"
-        })
-        .then(function(){ Alert.alert("ok"); })
-        firebase.firestore().collection('Users').doc('IDAN').set({
-            Name: "idan",
-            email: "idan@co.com"
-        })
-        .then(function (){ Alert.alert("no"); })
-    }*/
 
     headerButton()
     {
@@ -73,12 +92,9 @@ class Map extends Component{
         else
             firebase.auth().signOut()
             .then(()=>{
-                Alert.alert("ההתנתקות הצליחה")
                 this.props.navigation.navigate('Login')
             })
             .catch(()=> Alert.alert("ההתנתקות נכשלה"));
-
-        //this.props.navigation.navigate('AddLocation', {latitude:this.state.latitude, longitude:this.state.longitude});
     }
 
     render(){
@@ -120,53 +136,22 @@ class Map extends Component{
                             latitudeDelta: 0.014,
                             longitudeDelta: 0.001
                         }}
-                        //onPress={()=>this.func()}
+                        onPress={(event)=>{
+                            this.setState({
+                                latitude: event.nativeEvent.coordinate.latitude,
+                                longitude: event.nativeEvent.coordinate.longitude
+                            });
+                            this.clickOnMap();
+                        }}
                         >
-                       <Marker
-                            coordinate={{latitude:31.756106, longitude:35.165088}}>
-
-                            <Callout onPress={()=>this.props.navigation.navigate('AddLocation')}><Button><Text>הוספת מקום</Text></Button></Callout>
-                        </Marker> 
-
-                        <Marker
-                            coordinate={{latitude:31.756806, longitude:35.165088}}>
-
-                            <Callout onPress={()=>this.props.navigation.navigate('AddLocation')}><Button><Text>הוספת מקום</Text></Button></Callout>
-                        </Marker> 
-
-                        <Marker
-                            coordinate={{latitude:31.756106, longitude:35.165988}}>
-
-                            <Callout onPress={()=>this.props.navigation.navigate('AddLocation')}><Button><Text>הוספת מקום</Text></Button></Callout>
-                        </Marker> 
-
-                        <Marker
-                            coordinate={{latitude:31.756306, longitude:35.165988}}>
-
-                            <Callout><Text>גינה קהילתית</Text></Callout>
-                        </Marker> 
-
-                        <Marker
-                            coordinate={{latitude:31.756106, longitude:35.166988}}>
-
-                            <Callout><Text>חנות טבע</Text></Callout>
-                        </Marker> 
-
-
-
-
-
-
-
-
+                        
+                        {this.displayCoordinates(this.state.myCoordinates)}
                         
                     </MapView>
                 </View>
             </View>
         )
     }
-    //<MapView.Marker coordinate={{ latitude:event.nativeEvent.coordinate.latitude,longitude:event.nativeEvent.coordinate.longitude}}></MapView.Marker>
-/*"latitude:"+event.nativeEvent.coordinate.latitude+"\nlongitude:"+event.nativeEvent.coordinate.longitude*/
 }
 
 export default Map;
@@ -201,3 +186,33 @@ const styles = {
     },
 
 }
+
+                        /*<Marker
+                            coordinate={{latitude:31.756106, longitude:35.165088}}>
+
+                            <Callout onPress={()=>this.props.navigation.navigate('AddLocation')}><Button><Text>הוספת מקום</Text></Button></Callout>
+                        </Marker> 
+
+                        <Marker
+                            coordinate={{latitude:31.756806, longitude:35.165088}}>
+
+                            <Callout onPress={()=>this.props.navigation.navigate('AddLocation')}><Button><Text>הוספת מקום</Text></Button></Callout>
+                        </Marker> 
+
+                        <Marker
+                            coordinate={{latitude:31.756106, longitude:35.165988}}>
+
+                            <Callout onPress={()=>this.props.navigation.navigate('AddLocation')}><Button><Text>הוספת מקום</Text></Button></Callout>
+                        </Marker> 
+
+                        <Marker
+                            coordinate={{latitude:31.756306, longitude:35.165988}}>
+
+                            <Callout><Text>גינה קהילתית</Text></Callout>
+                        </Marker> 
+
+                        <Marker
+                            coordinate={{latitude:31.756106, longitude:35.166988}}>
+
+                            <Callout><Text>חנות טבע</Text></Callout>
+                        </Marker> */

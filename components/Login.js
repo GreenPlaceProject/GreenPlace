@@ -1,9 +1,9 @@
 import React, {Component } from "react"
 import {View, TextInput, Image, TouchableOpacity, Text, ImageBackground} from "react-native"
-import firebase from '../config/Firebase';
+import firebase from '../config/Firebase'
 import 'react-navigation'
-import Snackbar from 'react-native-snackbar';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import DropdownAlert from 'react-native-dropdownalert'
 
 export default class Login extends Component {
 
@@ -15,8 +15,7 @@ export default class Login extends Component {
             password: "",                  
             pressed_login: false,
             pressed_register: false,
-            pressed_as_a_guest: false,
-            pressed_forgotten : false
+            pressed_as_a_guest: false
         }
     } 
 
@@ -38,24 +37,14 @@ export default class Login extends Component {
     forgotPassword(){
 
         if(this.state.email === ""){
-            Snackbar.show({
-                text: 'אנא הכנס מייל',
-                duration: Snackbar.LENGTH_SHORT,
-            });
+            this.dropDownAlertRef.alertWithType('warn', '', "אנא הכנס דוא'ל");
             return;
         }
 
         firebase.auth().sendPasswordResetEmail(this.state.email)
-        .then(() => Snackbar.show({
-            text: 'מייל לאיפוס סיסמא נשלח בהצלחה',
-            duration: Snackbar.LENGTH_SHORT,
-            })
-        )
-        .catch(() => Snackbar.show({
-            text: 'מייל לאיפוס סיסמא נשלח בהצלחה',
-            duration: Snackbar.LENGTH_SHORT,
-            })
-        )
+        .then(() => this.dropDownAlertRef.alertWithType('info', '', 'מייל לאיפוס סיסמא נשלח בהצלחה'))
+        .catch(() => this.dropDownAlertRef.alertWithType('info', '', 'מייל לאיפוס סיסמא נשלח בהצלחה'))
+        this.resetFields();
     }
 
         //A function returning TouchableOpacity for 'Login' button
@@ -78,10 +67,7 @@ export default class Login extends Component {
 
         if(this.state.email === "" | this.state.password === "")
         {
-            Snackbar.show({
-                text: "אחד או יותר מהשדות ריקים",
-                duration: Snackbar.LENGTH_SHORT,
-            });
+            this.dropDownAlertRef.alertWithType('warn', '', "אחד או יותר מהשדות ריקים")
             return;
         } 
 
@@ -96,10 +82,7 @@ export default class Login extends Component {
                 })
             })
         })
-        .catch(() =>Snackbar.show({
-            text: "אחד הנתונים אינם נכונים",
-            duration: Snackbar.LENGTH_SHORT,
-        }))
+        .catch(() => this.dropDownAlertRef.alertWithType('warn', '', "המייל או הסיסמא אינם נכונים"))
     }
 
         //A function returning TouchableOpacity for 'Register' button
@@ -199,7 +182,7 @@ export default class Login extends Component {
                     
                         <View style = {styles.InputView}>
                             <TextInput style = {styles.textInputStyle}
-                                placeholder = "שם משתמש"
+                                placeholder = "דוא'ל"
                                 placeholderTextColor = "#006400"
                                 autoCorrect = {false}
                                 onChangeText = {email => this.setState({ email })}
@@ -227,9 +210,12 @@ export default class Login extends Component {
                         <View>{this.registerButton()}</View>
                         <View>{this.guestButton()}</View>
                         <View>{this.adminButton()}</View>
-               
+
                     </KeyboardAwareScrollView>
                 </ImageBackground>
+                <View style={{ position: "absolute", top: "0%", right: "25%", width: "50%", height: "40%"}}>
+                    <DropdownAlert ref={ref => this.dropDownAlertRef = ref} />
+                </View>
             </View>
         )
     }

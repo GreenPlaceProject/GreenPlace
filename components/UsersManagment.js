@@ -1,14 +1,19 @@
 import React, { Component } from "react"
-import { TextInput, Text, TouchableOpacity, ImageBackground } from "react-native"
+import { Text, TouchableOpacity, ImageBackground } from "react-native"
 import { View } from "native-base"
 import { Header } from "react-native-elements"
 import firebase from '../config/Firebase'
 import 'react-navigation'
-import Snackbar from 'react-native-snackbar';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 
-export default class AdmitScreen extends Component {
+export default class UsersManagment extends Component {
+
+    constructor() {
+        super();
+        this.usersRef = firebase.database().ref().child('Users');
+    } 
+
 
     returnButton(){
         return(
@@ -25,12 +30,22 @@ export default class AdmitScreen extends Component {
     }
 
 
-    addCategory(){
-        //firebase.database().ref().child('Places').push('גינה ציבורית')
-        firebase.database().ref().child('Users').push({
-            email: "t@t.com",
-            username: "ttt"
-        })
+    removeUser(){
+        /*  
+            
+            need admin.auth().getUserByEmail()
+
+        */
+    
+
+        /*firebase.database().ref().child('Categories').on('value',(snap)=>{   //how to delete a category
+            snap.forEach((child) =>{
+                if(child.val() === 'ok')
+                    firebase.database().ref('Categories/'+child.key).remove() 
+            })
+            
+        })*/
+
     }
 
 
@@ -41,16 +56,16 @@ export default class AdmitScreen extends Component {
             <ImageBackground source={require('../Images/BackGround.jpg')} imageStyle={{ opacity: 0.15 }} style={{ flex: 1, height: "100%" }}>
                 <KeyboardAwareScrollView enableOnAndroid="true" >
                     <Header
-                        centerComponent={{ text: 'דף אדמין', style: styles.centerComponentStyle }}
+                        centerComponent={{ text: 'ניהול משתמשים', style: styles.centerComponentStyle }}
                         backgroundColor="#e6ffe6"
                         rightComponent={this.returnButton()}
                     />
                     <TouchableOpacity
                         title = "Return"
                         style={styles.returnButton}
-                        onPress = {()=>this.addCategory()}
+                        onPress = {()=>this.removeUser()}
                     >
-                        <Text style = {styles.returnButtonText}>הוספה</Text>
+                        <Text style = {styles.returnButtonText}>מחיקה</Text>
                     </TouchableOpacity>
                     
 
