@@ -162,7 +162,7 @@ export default class Login extends Component {
     }
 
     toAdminPage(){
-        this.props.navigation.navigate('AdminScreen');
+        this.props.navigation.navigate('CategoriesManagement');
     }
 
 
