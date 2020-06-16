@@ -4,7 +4,6 @@ import { View } from "native-base"
 import { Header } from "react-native-elements"
 import firebase from '../config/Firebase'
 import 'react-navigation'
-import Snackbar from 'react-native-snackbar'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import DropdownAlert from 'react-native-dropdownalert'
 

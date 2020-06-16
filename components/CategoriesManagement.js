@@ -5,6 +5,8 @@ import firebase from '../config/Firebase'
 import 'react-navigation'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { List } from "react-native-paper"
+import DropdownAlert from 'react-native-dropdownalert'
+import 'react-native-vector-icons'
 
 
 export default class CategoriesManagement extends Component {
@@ -29,7 +31,7 @@ export default class CategoriesManagement extends Component {
                 l.push(
                     <List.Item
                         title={child.val()}
-                        left={props => <List.Icon {...props} icon="folder" />}
+                        left={props => <List.Icon {...props} icon="camera" />}
                         onPress={() => this.categoryDeleteConfirmation(child)}
                     />
                 )
@@ -92,14 +94,25 @@ export default class CategoriesManagement extends Component {
 
     addCategoryFunc() {
         if (this.state.category === '') {
-            alert('emptuy');
+            this.dropDownAlertRef.alertWithType('warn', '', "אנא הכנס שם קטגוריה להוספה")
             return;
         }
-        if(this.categoryRef.orderByValue().equalTo(this.state.category)){
-            alert('exist')
+        var exist = false;
+        this.categoryRef.on("value", (snap) => {
+            snap.forEach((cat) => {
+                    if(cat.val() === this.state.category){
+                        exist = true;
+                        return;
+                    }
+                })
+        })
+        if(exist){
+            this.dropDownAlertRef.alertWithType('warn', '', "הקטגוריה כבר קיימת")
+            this.setState({category : ""})
             return;
         }
         this.categoryRef.push(this.state.category);
+        this.dropDownAlertRef.alertWithType('info', '', "קטגוריה נוספה בהצלחה!")
         this.getUpdatedList();
         this.setState({
             category: "",
@@ -121,8 +134,8 @@ export default class CategoriesManagement extends Component {
                         <View>{this.addCategoryBtn()}</View>
 
                         <View style={{ position: "absolute", paddingTop: "8%", width: "55%", left: "2%", borderColor: "grey", }}>
-                            <TextInput style={{ borderColor: "#006400", borderRadius: 15, borderWidth: 3, fontSize: 20, width: "80%", alignSelf: "center", textAlign: 'center' }}
-                                placeholder="דוא'ל"
+                            <TextInput style={{ borderColor: "#006400", borderRadius: 15, borderWidth: 3, fontSize: 20, width: "80%", height: "85%", alignSelf: "center", textAlign: 'center' }}
+                                placeholder="שם קטגוריה"
                                 placeholderTextColor="#006400"
                                 autoCorrect={false}
                                 onChangeText={category => this.setState({ category })}
@@ -136,18 +149,10 @@ export default class CategoriesManagement extends Component {
                         <List.Subheader>למחיקה - לחץ על קטגוריה</List.Subheader>
                             {this.state.list}
                     </List.Section>
-
-
-
-                    {/* <View>
-                        {this.callMyComponent()}
-                    </View> */}
-                    {/* 
-                    {this.state.list.forEach((item)=>{
-                        this.myComponent()
-                    })} */}
-
                 </KeyboardAwareScrollView>
+                <View style={{ position: "absolute", top: "0%", right: "25%", width: "50%", height: "40%"}}>
+                    <DropdownAlert ref={ref => this.dropDownAlertRef = ref} />
+                </View>
             </ImageBackground>
         )
     }
@@ -160,7 +165,6 @@ const styles = {
         paddingTop: "5%",
         width: "40%",
         left: "55%",
-
         borderColor: "grey",
     },
     buttonStyle: {
