@@ -23,20 +23,6 @@ export default class UsersManagment extends Component {
     }
 
 
-    returnButton() {
-        return (
-            <View style={{ alignSelf: "flex-end", right: "-20%", top: "-40%", width: "130%", height: "13%" }}>
-                <TouchableOpacity
-                    title="Return"
-                    style={styles.returnButton}
-                    onPress={() => this.props.navigation.goBack()}
-                >
-                    <Text style={styles.returnButtonText}>יציאה</Text>
-                </TouchableOpacity>
-            </View>
-        )
-    }
-
     componentWillMount() {
         this.getUpdatedList();
     }
@@ -55,6 +41,46 @@ export default class UsersManagment extends Component {
             this.setState({ usersList: list });
         })
     }
+
+
+
+    returnButton() {
+        return (
+            <View style={{ alignSelf: "flex-end", right: "-20%", top: "-40%", width: "130%", height: "13%" }}>
+                <TouchableOpacity
+                    title="Return"
+                    style={styles.returnButton}
+                    onPress={() => this.exitAdminScreen()}
+                >
+                    <Text style={styles.returnButtonText}>יציאה</Text>
+                </TouchableOpacity>
+            </View>
+        )
+    }
+
+    
+    exitAdminScreen(){
+        firebase.auth().signOut()
+            .then(()=>{
+                this.props.navigation.navigate('Login')
+            })
+            .catch(()=> this.dropDownAlertRef.alertWithType('warn', '', "התנתקות נכשלה"))
+    }
+
+    toCategoriesButton() {
+        return (
+            <View style={{ alignSelf: "flex-end", right: "-20%", top: "-40%", width: "130%", height: "13%" }}>
+                <TouchableOpacity
+                    title="Return"
+                    style={styles.returnButton}
+                    onPress={() => this.props.navigation.navigate('CategoriesManagement')}
+                >
+                    <Text style={styles.returnButtonText}>קטגוריות</Text>
+                </TouchableOpacity>
+            </View>
+        )
+    }
+
     removeUserConfirmation(child) {
         Alert.alert(
             'שים לב!',
@@ -96,6 +122,7 @@ export default class UsersManagment extends Component {
                         centerComponent={{ text: 'ניהול משתמשים', style: styles.centerComponentStyle }}
                         backgroundColor="#e6ffe6"
                         rightComponent={this.returnButton()}
+                        leftComponent={this.toCategoriesButton()}
                     />
 
 

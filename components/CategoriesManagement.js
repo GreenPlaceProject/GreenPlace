@@ -70,13 +70,41 @@ export default class CategoriesManagement extends Component {
                 <TouchableOpacity
                     title="Return"
                     style={styles.returnButton}
-                    onPress={() => this.props.navigation.navigation('UsersManagment')}
+                    onPress={() => this.exitAdminScreen()}
                 >
-                    <Text style={styles.returnButtonText}>חזור</Text>
+                    <Text style={styles.returnButtonText}>יציאה</Text>
                 </TouchableOpacity>
             </View>
         )
     }
+
+    exitAdminScreen(){
+        firebase.auth().signOut()
+            .then(()=>{
+                this.props.navigation.navigate('Login')
+            })
+            .catch(()=> this.dropDownAlertRef.alertWithType('warn', '', "התנתקות נכשלה"))
+    }
+
+
+
+
+
+    toUsersButton() {
+        return (
+            <View style={{ alignSelf: "flex-end", right: "-20%", top: "-40%", width: "130%", height: "13%" }}>
+                <TouchableOpacity
+                    title="Return"
+                    style={styles.returnButton}
+                    onPress={() => this.props.navigation.navigate('UsersManagment')}
+                >
+                    <Text style={styles.returnButtonText}>user</Text>
+                </TouchableOpacity>
+            </View>
+        )
+    }
+
+    
 
     addCategoryBtn() {
         return (
@@ -129,6 +157,7 @@ export default class CategoriesManagement extends Component {
                         centerComponent={{ text: 'ניהול קטגוריות', style: styles.centerComponentStyle }}
                         backgroundColor="#e6ffe6"
                         rightComponent={this.returnButton()}
+                        leftComponent={this.toUsersButton()}
                     />
                     <View>
                         <View>{this.addCategoryBtn()}</View>
