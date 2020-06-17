@@ -70,7 +70,7 @@ export default class CategoriesManagement extends Component {
                 <TouchableOpacity
                     title="Return"
                     style={styles.returnButton}
-                    onPress={() => this.props.navigation.goBack()}
+                    onPress={() => this.props.navigation.navigation('UsersManagment')}
                 >
                     <Text style={styles.returnButtonText}>חזור</Text>
                 </TouchableOpacity>
