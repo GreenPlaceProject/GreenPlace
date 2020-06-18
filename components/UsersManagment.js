@@ -29,19 +29,22 @@ export default class UsersManagment extends Component {
 
     getUpdatedList() {
         var list = [];
+        var type;
         this.usersRef.orderByChild('username').on('value', (snap) => {
             snap.forEach((child) => {
-                list.push(
-                    <List.Item
-                        title={child.val().username}
-                        onPress={() => this.removeUserConfirmation(child)}
-                    />
-                )
+                type = child.val().type;
+                if(type === 'משתמש' || type === 'אדמין')
+                    list.push(
+                        <List.Item
+                            title={child.val().username}
+                            description = {type}
+                            onPress={() => this.changeUserConfirmation(child)}
+                        />
+                    )
             })
             this.setState({ usersList: list });
         })
     }
-
 
 
     returnButton() {
@@ -57,7 +60,6 @@ export default class UsersManagment extends Component {
             </View>
         )
     }
-
     
     exitAdminScreen(){
         firebase.auth().signOut()
@@ -81,31 +83,29 @@ export default class UsersManagment extends Component {
         )
     }
 
-    removeUserConfirmation(child) {
+
+    changeUserConfirmation(child) {
         Alert.alert(
             'שים לב!',
-            "האם אתה בטוח שברצונך למחוק את '" + child.val().username + "' ?",
+            "האם אתה בטוח שברצונך לשנות את '" + child.val().username + "' ?",
             [
-                {
-                    text: 'ביטול',
-                    style: 'cancel'
-                },
-                { text: 'מחק', onPress: () => this.removeUser(child) }
+                { text: 'ביטול', style: 'cancel' },
+                { text: 'שנה לאדמין', onPress: () =>  this.changeUser(child,'אדמין') },
+                { text: 'שנה למשתמש', onPress: () => this.changeUser(child,'משתמש') }
             ],
             { cancelable: false }
         );
+
     }
 
-    removeUser(userInfo) {
 
-        /*  
-            
-            need admin.auth().getUserByEmail()
+    changeUser(userInfo,newType) {
 
-        */
-
-        //firebase.database().ref('Users/'+userInfo.key).remove();  .then()  .catch
-
+        firebase.database().ref('Users/'+ userInfo.key).set({
+            email: userInfo.val().email,
+            type: newType,
+            username: userInfo.val().username
+        })
 
         this.getUpdatedList();
     }
@@ -128,7 +128,7 @@ export default class UsersManagment extends Component {
 
 
                     <List.Section>
-                        <List.Subheader>למחיקה - לחץ על שם משתמש</List.Subheader>
+                        <List.Subheader>לשינוי הרשאות - לחץ על שם משתמש</List.Subheader>
                         {this.state.usersList}
                     </List.Section>
 

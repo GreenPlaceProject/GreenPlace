@@ -78,7 +78,7 @@ export default class Login extends Component {
                 snap.forEach((child) =>{
                     if(child.val().email === this.state.email){
                         this.resetFields();
-                        this.props.navigation.navigate('Map',{user : child.val().username, btn : "התנתק"})                        
+                        this.props.navigation.navigate('Map',{user : child.val().username, btn : "התנתק", intro : ""})                        
                     }
                 })
             })
@@ -151,20 +151,22 @@ export default class Login extends Component {
             this.dropDownAlertRef.alertWithType('warn', '', "אחד או יותר מהשדות ריקים")
             return;
         }
-        
+
         var userType = this.getUserType();
-        if(userType === 'user'){
+        if(userType === 'משתמש'){
             this.dropDownAlertRef.alertWithType('error', '', "גישה חסומה למשתמש זה");
+            this.resetFields();
             return;
         }
+        this.resetFields();
         this.props.navigation.navigate('CategoriesManagement', {adminType : userType});
     }
 
     getUserType(){
-        var type = 'user';
+        var type = 'משתמש';
         this.usersRef.on('value', (users) =>{
             users.forEach((user) => {
-                if( user.val().email === this.state.email &&  user.val().type !== 'user' ){
+                if( user.val().email === this.state.email &&  user.val().type !== 'משתמש' ){
                     type = user.val().type;
                     return;
                 }

@@ -89,11 +89,11 @@ export default class Registeration extends Component {
             this.usersRef.push({                //Adding username and password to DB.
                 email: this.state.email,
                 username: this.state.username,
-                type: "user"
+                type: "משתמש"
             })
 
             this.resetFields();
-            this.props.navigation.navigate('Map',{user : user , btn : "התנתק"})
+            this.props.navigation.navigate('Map',{user : user , btn : "התנתק", intro : "first time"})
         })
         .catch((error) => {
             if(error.message === "The email address is already in use by another account.")
