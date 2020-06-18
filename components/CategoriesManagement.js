@@ -22,6 +22,11 @@ export default class CategoriesManagement extends Component {
     componentWillMount() {
         this.getUpdatedList();
     }
+    componentDidMount(){
+        this.categoryRef.on('child_added', (snap) => this.getUpdatedList())
+        this.categoryRef.on('child_changed', (snap) => this.getUpdatedList())
+        this.categoryRef.on('child_removed', (snap) => this.getUpdatedList())
+    }
 
     getUpdatedList(){
         var l = [];
@@ -59,8 +64,8 @@ export default class CategoriesManagement extends Component {
 
     categoryDelete(key){
         firebase.database().ref('Categories/' + key).remove()
-        .then(()=> this.getUpdatedList())
-        .catch(()=> alert("FAILED"))
+        .then(()=> this.dropDownAlertRef.alertWithType('success', '', "קטגוריה נמחקה"))
+        .catch(()=> this.dropDownAlertRef.alertWithType('error', '', "מחיקה נכשלה"))
     }
 
 
@@ -143,16 +148,14 @@ export default class CategoriesManagement extends Component {
             return;
         }
         this.categoryRef.push(this.state.category);
-        this.dropDownAlertRef.alertWithType('info', '', "קטגוריה נוספה בהצלחה!")
-        this.getUpdatedList();
-        this.setState({
-            category: "",
-        })
+        this.dropDownAlertRef.alertWithType('info', '', "קטגוריה נוספה בהצלחה!") 
+        this.setState({ category: "" })
     }
 
 
     render() {
         return (
+            <View height = "100%" width = "100%" style = {{flex:1}}>
             <ImageBackground source={require('../Images/BackGround.jpg')} imageStyle={{ opacity: 0.15 }} style={{ flex: 1, height: "100%" }}>
                 <KeyboardAwareScrollView enableOnAndroid="true" >
 
@@ -186,6 +189,7 @@ export default class CategoriesManagement extends Component {
                     <DropdownAlert ref={ref => this.dropDownAlertRef = ref} />
                 </View>
             </ImageBackground>
+            </View>
         )
     }
 

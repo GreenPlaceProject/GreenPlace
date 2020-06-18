@@ -133,13 +133,20 @@ export default class Login extends Component {
 
     adminButton(){
         return (
-            <View style = {styles.buttonViewStyle}>
+            <View style = {{ width: "20%", borderColor : "grey", alignItems : "center"}}>
                 <TouchableOpacity
                     title = "admin"
-                    style={styles.buttonStyle}
+                    style={{
+                        alignItems:'center',
+                        justifyContent:'center',
+                        backgroundColor:'#006400',
+                        borderColor: "#004577",
+                        borderWidth: 3 ,
+                        borderRadius: 50,
+                    }}
                     onPress = {()=> this.toAdminPage()}
                 >
-                <Text style = {styles.buttonTextStyle}>כניסה לאדמין</Text>
+                <Text style = {{fontSize: 15, color: "#fff" }}>כניסה למנהל</Text>
                 </TouchableOpacity>
             </View>
         )
@@ -160,6 +167,7 @@ export default class Login extends Component {
         }
         this.resetFields();
         this.props.navigation.navigate('CategoriesManagement', {adminType : userType});
+
     }
 
     getUserType(){
@@ -196,7 +204,7 @@ export default class Login extends Component {
                     style={styles.image}
                 />
 
-                <ImageBackground source={require ('../Images/BackGround.jpg')} imageStyle={{opacity:0.15}} style={{flex: 1,height:"100%"}}>
+                <ImageBackground source={require ('../Images/Login_BackGround.jpg')} imageStyle={{opacity:0.15}} style={{flex: 1,height:"100%"}}>
 
                     <KeyboardAwareScrollView enableOnAndroid = "true" >
                     
@@ -230,6 +238,17 @@ export default class Login extends Component {
                         <View>{this.registerButton()}</View>
                         <View>{this.guestButton()}</View>
                         <View>{this.adminButton()}</View>
+                        <View>
+                        <Image
+                            source={require("../Images/App_Logo.jpg")}
+                            style={{
+                                height: "25%",
+                                width: "100%",
+                                alignSelf: "center",
+                                resizeMode: "stretch",       
+                            }}
+                        />
+                        </View>
 
                     </KeyboardAwareScrollView>
                 </ImageBackground>
@@ -241,9 +260,6 @@ export default class Login extends Component {
     }
 
 }
-
-
-
 
 const styles = {
     image: {

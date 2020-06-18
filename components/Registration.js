@@ -120,6 +120,7 @@ export default class Registeration extends Component {
 
     render(){
         return(
+            <View height = "100%" width = "100%" style = {{flex:1}}>
             <ImageBackground source={require ('../Images/BackGround.jpg')} imageStyle={{opacity:0.15}} style={{flex: 1,height:"100%"}}>
             <KeyboardAwareScrollView enableOnAndroid = "true" >
           
@@ -197,6 +198,7 @@ export default class Registeration extends Component {
                     <DropdownAlert ref={ref => this.dropDownAlertRef = ref} />
                 </View>
             </ImageBackground>
+            </View>
         )
     }
 }

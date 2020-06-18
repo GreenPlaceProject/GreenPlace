@@ -1,5 +1,5 @@
 import React, { Component } from "react"
-import { View, TouchableOpacity, Text, ImageBackground, Alert } from "react-native"
+import { View, TouchableOpacity, Text, ImageBackground, Alert, Image } from "react-native"
 import { Header } from "react-native-elements"
 import firebase from '../config/Firebase'
 import 'react-navigation'
@@ -26,6 +26,12 @@ export default class UsersManagment extends Component {
     componentWillMount() {
         this.getUpdatedList();
     }
+    
+    componentDidMount(){
+        this.usersRef.on('child_added', (snap) => this.getUpdatedList())
+        this.usersRef.on('child_changed', (snap) => this.getUpdatedList())
+        this.usersRef.on('child_removed', (snap) => this.getUpdatedList())
+    }
 
     getUpdatedList() {
         var list = [];
@@ -33,7 +39,7 @@ export default class UsersManagment extends Component {
         this.usersRef.orderByChild('username').on('value', (snap) => {
             snap.forEach((child) => {
                 type = child.val().type;
-                if(type === 'משתמש' || type === 'אדמין')
+                if(type === 'משתמש' || type === 'מנהל')
                     list.push(
                         <List.Item
                             title={child.val().username}
@@ -71,13 +77,13 @@ export default class UsersManagment extends Component {
 
     toCategoriesButton() {
         return (
-            <View style={{ alignSelf: "flex-end", right: "-20%", top: "-40%", width: "130%", height: "13%" }}>
+            <View style = {styles.buttonViewStyle}>
                 <TouchableOpacity
                     title="Return"
-                    style={styles.returnButton}
+                    style={styles.buttonStyle}
                     onPress={() => this.props.navigation.navigate('CategoriesManagement')}
                 >
-                    <Text style={styles.returnButtonText}>קטגוריות</Text>
+                    <Text style={styles.returnButtonText}>ניהול קטגוריות</Text>
                 </TouchableOpacity>
             </View>
         )
@@ -90,7 +96,7 @@ export default class UsersManagment extends Component {
             "האם אתה בטוח שברצונך לשנות את '" + child.val().username + "' ?",
             [
                 { text: 'ביטול', style: 'cancel' },
-                { text: 'שנה לאדמין', onPress: () =>  this.changeUser(child,'אדמין') },
+                { text: 'שנה למנהל', onPress: () =>  this.changeUser(child,'מנהל') },
                 { text: 'שנה למשתמש', onPress: () => this.changeUser(child,'משתמש') }
             ],
             { cancelable: false }
@@ -106,8 +112,6 @@ export default class UsersManagment extends Component {
             type: newType,
             username: userInfo.val().username
         })
-
-        this.getUpdatedList();
     }
 
 
@@ -115,48 +119,44 @@ export default class UsersManagment extends Component {
 
     render() {
         return (
-
+            <View height = "100%" width = "100%" style = {{flex:1}}>
             <ImageBackground source={require('../Images/BackGround.jpg')} imageStyle={{ opacity: 0.15 }} style={{ flex: 1, height: "100%" }}>
                 <KeyboardAwareScrollView enableOnAndroid="true" >
                     <Header
                         centerComponent={{ text: 'ניהול משתמשים', style: styles.centerComponentStyle }}
                         backgroundColor="#e6ffe6"
                         rightComponent={this.returnButton()}
-                        leftComponent={this.toCategoriesButton()}
                     />
 
-
+                    <View
+                        styles
+                        >
+                        {this.toCategoriesButton()}
+                        </View>
 
                     <List.Section>
                         <List.Subheader>לשינוי הרשאות - לחץ על שם משתמש</List.Subheader>
                         {this.state.usersList}
+
                     </List.Section>
 
-
-                </KeyboardAwareScrollView>
+                {/* <View style = {{ position: "absolute", top: "90%",width:"100%",height:"40%"}}>
+                    <Image
+                        source={require ("../Images/App_Logo.jpg")}
+                        style={styles.image}
+                        />
+                </View> */}
+                        </KeyboardAwareScrollView>
                 <View style={{ position: "absolute", top: "0%", right: "25%", width: "50%", height: "40%" }}>
                     <DropdownAlert ref={ref => this.dropDownAlertRef = ref} />
                 </View>
             </ImageBackground>
+            </View>
         )
     }
 }
 
 const styles = {
-    inputView: {
-        alignSelf: "center",
-        paddingTop: "6%",
-        height: "15%",
-        width: "90%"
-    },
-    textInputStyle: {
-        borderColor: "#006400",
-        borderRadius: 15,
-        borderWidth: 3,
-        fontSize: 20,
-        width: "80%",
-        alignSelf: "center"
-    },
     centerComponentStyle: {
         color: "#006400",
         fontWeight: "bold",
@@ -164,7 +164,7 @@ const styles = {
         top: -10
     },
     buttonViewStyle: {
-        paddingTop: "15%",
+        paddingTop: "3%",
         width: "50%",
         alignSelf: "center",
         borderColor: "grey",
@@ -193,5 +193,13 @@ const styles = {
     returnButtonText: {
         fontSize: 20,
         color: "#fff"
-    }
+    },
+    image: {
+        height: "25%",
+        width: "100%",
+        alignSelf: "center",
+        marginBottom: "5%", 
+        paddingBottom: "9%",
+        resizeMode: "stretch"
+    },
 }
