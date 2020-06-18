@@ -4,7 +4,6 @@ import { View } from "native-base"
 import { Header } from "react-native-elements"
 import firebase from '../config/Firebase'
 import 'react-navigation'
-import Snackbar from 'react-native-snackbar'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import DropdownAlert from 'react-native-dropdownalert'
 
@@ -89,11 +88,12 @@ export default class Registeration extends Component {
 
             this.usersRef.push({                //Adding username and password to DB.
                 email: this.state.email,
-                username: this.state.username
+                username: this.state.username,
+                type: "משתמש"
             })
 
             this.resetFields();
-            this.props.navigation.navigate('Map',{user : user , btn : "התנתק"})
+            this.props.navigation.navigate('Map',{user : user , btn : "התנתק", intro : "first time"})
         })
         .catch((error) => {
             if(error.message === "The email address is already in use by another account.")
@@ -120,6 +120,7 @@ export default class Registeration extends Component {
 
     render(){
         return(
+            <View height = "100%" width = "100%" style = {{flex:1}}>
             <ImageBackground source={require ('../Images/BackGround.jpg')} imageStyle={{opacity:0.15}} style={{flex: 1,height:"100%"}}>
             <KeyboardAwareScrollView enableOnAndroid = "true" >
           
@@ -197,6 +198,7 @@ export default class Registeration extends Component {
                     <DropdownAlert ref={ref => this.dropDownAlertRef = ref} />
                 </View>
             </ImageBackground>
+            </View>
         )
     }
 }

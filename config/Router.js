@@ -7,6 +7,7 @@ import Registration from '../components/Registration';
 import Map from '../components/Map';
 import AddLocation from '../components/AddLocation';
 import UsersManagment from '../components/UsersManagment';
+import CategoriesManagement from '../components/CategoriesManagement';
 
 
 const NavigationStack = createStackNavigator({
@@ -29,6 +30,10 @@ const NavigationStack = createStackNavigator({
     UsersManagment: {
         screen: UsersManagment,
         navigationOptions: { headerShown: false}
+    },
+    CategoriesManagement: {
+        screen: CategoriesManagement,
+        navigationOptions: { headerShown: false }
     }
 });
 
