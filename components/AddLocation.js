@@ -1,19 +1,32 @@
 import React, { Component } from "react";
 import { View , TextInput , Text , ImageBackground , Picker, TouchableOpacity,Alert } from "react-native";
 import { Header } from "react-native-elements"
-import InputScrollView from 'react-native-input-scroll-view';
-
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import DropdownAlert from 'react-native-dropdownalert'
+import firebase from '../config/Firebase'
 import 'react-navigation'
 
 
 class AddLocationForm extends Component{
     constructor(props){
         super(props);
+        this.placesRef = firebase.database().ref().child('Places');
         this.state = {
             place: "",
             description: "",
             selectedLabel: "1"
         }
+    }
+
+    componentDidMount(){
+        if(this.props.navigation.state.params.isNew==false){
+            this.setState({
+                place: this.props.navigation.state.params.place.name,
+                description: this.props.navigation.state.params.place.description,
+                selectedLabel: this.props.navigation.state.params.place.category
+            })
+        }
+        
     }
 
     Show=(value)=>{
@@ -52,13 +65,48 @@ class AddLocationForm extends Component{
         )
     }
     update(){
-        Alert.alert(""+this.props.navigation.state.params.place.name);// בדיקת הגעת משתנים
-        if(this.state.place === "" || this.state.selectedLabel === "1"){
-            Alert.alert("אנא מלא את כל השדות");
+        if(this.state.place === "" ){
+            this.dropDownAlertRef.alertWithType('warn','', "אנא הכנס שם מקום");
             return;
         }
+
+        if(this.state.selectedLabel === "1"){
+            this.dropDownAlertRef.alertWithType('warn', '',"אנא בחר קטגוריה");
+            return;
+        }
+       
+        if(this.props.navigation.state.params.isNew==true){
+            this.placesRef.push({
+            latitude: this.props.navigation.state.params.latitude,
+            longitude: this.props.navigation.state.params.longitude,
+            name: this.state.place,
+            description:this.state.description,
+            category:this.state.selectedLabel
+
+            })
+        }
+        else{
+            var id;
+            var i=0;
+            this.placesRef.on('value',(places)=>{  
+                places.forEach((place) =>{
+                    if(place.child('latitude').val() === this.props.navigation.state.params.place.latitude && place.child('longitude').val() === this.props.navigation.state.params.place.longitude)
+                        id = place.key;
+                       
+                })
+            })
+            
+            this.placesRef.child(""+id).set({                //Adding place to DB.
+                latitude: this.props.navigation.state.params.place.latitude,
+                longitude: this.props.navigation.state.params.place.longitude,
+                name: this.state.place,
+                description:this.state.description,
+                category:this.state.selectedLabel
+    
+            })
+            
+        }
         this.resetFields();
-        //firestore??
         this.props.navigation.navigate('Map');
     }
 
@@ -73,7 +121,6 @@ class AddLocationForm extends Component{
 
     render(){
         return(
-
             <ImageBackground source={require ('../Images/BackGround.jpg')} imageStyle={{opacity:0.15}} style={{flex: 1,height:"100%"}}>
                 <View>
                     <Header 
@@ -85,54 +132,60 @@ class AddLocationForm extends Component{
                     </Header>
                 </View>              
 
-                <View style={{marginTop:60,marginBottom:20,height:'10%'}}>
-                    <TextInput style={styles.textInputStyle}
-                        textAlign = "center"
-                        placeholder = {"שם מקום"}
-                        placeholderTextColor = "#006400"                        
-                        autoCorrect = {false}
-                        onChangeText = {place => this.setState({place})}
-                        value = {this.state.place}
-                    />
-                </View>
-                <View style={styles.pickerStyle}>
-                    <Picker style={{color: "#006400" , left:62 , top: '9%'}} 
-                        selectedValue={this.state.selectedLabel}
-                        onValueChange = {this.Show.bind()}>
-                        <Picker.Item label="בחר קטגוריה" value="1" ></Picker.Item>
-                        <Picker.Item label="אתר פריחה" value="2"></Picker.Item>
-                        <Picker.Item label="אתר צפרות וצפיית חיות בר" value="3"></Picker.Item>
-                        <Picker.Item label="גינה ציבורית" value="4"></Picker.Item>
-                        <Picker.Item label="גינה קהילתית" value="5"></Picker.Item>
-                        <Picker.Item label="חנות אופניים" value="6"></Picker.Item>
-                        <Picker.Item label="חנות טבע" value="7"></Picker.Item>
-                        <Picker.Item label="חנות יד שניה" value="8"></Picker.Item>
-                        <Picker.Item label="ספריית רחוב" value="9"></Picker.Item>
-                        <Picker.Item label="עץ פרי" value="10"></Picker.Item>
-                        <Picker.Item label="פח מיחזור" value="11"></Picker.Item>
-                        <Picker.Item label="צמח מאכל ומרפא" value="12"></Picker.Item>
-                        <Picker.Item label="קומפוסטר" value="13"></Picker.Item>  
-                    </Picker>
-                </View>
+                <KeyboardAwareScrollView enableOnAndroid = "true" >
+                    <View style={{marginTop:60,marginBottom:20,height:'10%'}}>
+                        <TextInput style={styles.textInputStyle}
+                            textAlign = "center"
+                            placeholder = {"שם מקום"}
+                            placeholderTextColor = "#006400"                        
+                            autoCorrect = {false}
+                            onChangeText = {place => this.setState({place})}
+                            value = {this.state.place}
+                        />
+                    </View>
+                    <View style={styles.pickerStyle}>
+                        <Picker style={{color: "#006400" , left:62 , top: '9%'}} 
+                            selectedValue={this.state.selectedLabel}
+                            onValueChange = {this.Show.bind()}>
+                            <Picker.Item label="בחר קטגוריה" value="1" ></Picker.Item>
+                            <Picker.Item label="אתר פריחה" value="2"></Picker.Item>
+                            <Picker.Item label="אתר צפרות וצפיית חיות בר" value="3"></Picker.Item>
+                            <Picker.Item label="גינה ציבורית" value="4"></Picker.Item>
+                            <Picker.Item label="גינה קהילתית" value="5"></Picker.Item>
+                            <Picker.Item label="חנות אופניים" value="6"></Picker.Item>
+                            <Picker.Item label="חנות טבע" value="7"></Picker.Item>
+                            <Picker.Item label="חנות יד שניה" value="8"></Picker.Item>
+                            <Picker.Item label="ספריית רחוב" value="9"></Picker.Item>
+                            <Picker.Item label="עץ פרי" value="10"></Picker.Item>
+                            <Picker.Item label="פח מיחזור" value="11"></Picker.Item>
+                            <Picker.Item label="צמח מאכל ומרפא" value="12"></Picker.Item>
+                            <Picker.Item label="קומפוסטר" value="13"></Picker.Item>  
+                        </Picker>
+                    </View>
 
-                <View style={styles.inputView}>
-                    <TextInput style={styles.textInputStyle}
-                        textAlign = "center"
-                        placeholder = {"תיאור"}
-                        maxHeight={145}
-                        autoGrow={true}                    
-                        placeholderTextColor = "#006400"
-                        autoCorrect = {false}
-                        onChangeText = {description => this.setState({description})}
-                        value = {this.state.description}
-                        multiline={true}
-                        numberOfLines={5}
-                    />
-                </View>
+                    <View style={styles.inputView}>
+                        <TextInput style={styles.textInputStyle}
+                            textAlign = "center"
+                            placeholder = {"תיאור"}
+                            maxHeight={145}
+                            autoGrow={true}                    
+                            placeholderTextColor = "#006400"
+                            autoCorrect = {false}
+                            onChangeText = {description => this.setState({description})}
+                            value = {this.state.description}
+                            multiline={true}
+                            numberOfLines={5}
+                        />
+                    </View>
 
-                <View>{this.updateButton()}</View>
+                    <View>{this.updateButton()}</View>
+                </KeyboardAwareScrollView>
 
+            <View style={{ position: "absolute", top: "0%", right: "25%", width: "50%", height: "40%"}}>
+                <DropdownAlert ref={ref => this.dropDownAlertRef = ref} />
+            </View>
             </ImageBackground>
+            
         )
     }
 }

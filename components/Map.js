@@ -10,25 +10,47 @@ import 'react-navigation'
 class Map extends Component{
     constructor(props) {
         super(props);
+        this.placesRef = firebase.database().ref().child('Places');
         this.state = {
             pickerSelectedLabel:'',
             latitude:'',
             longitude:'',
-            myCoordinates: [{latitude:31.756106, longitude:35.165988, name: "נועם",description: "שלום", type:"dsf"},{latitude:31.756116, longitude:35.165088, name: 3,description: "blabla", type:"dsf"}]
+            myCoordinates: []
         };
     }
 
-    clickOnMap(){
-        Alert.alert( 'הוספת מקום','האם אתה רוצה להוסיף את המקום למפה?',
-        [{text: 'לא', onPress: ()=> {return}},
-        {text: 'כן', onPress: () => this.yesPressed()}])
+    componentDidMount() {
+        
+        this.placesRef.on('child_changed',places=>{ 
+            this.setState({myCoordinates:[]});
+            places.forEach((place) =>{
+                this.setState({myCoordinates: [...this.state.myCoordinates, place.val()]})
+            })
+        })
+        
+    
+        this.placesRef.on('value',(places)=>{ 
+            if(this.state.myCoordinates.length < 1){ 
+                places.forEach((place) =>{
+                    this.setState({myCoordinates: [...this.state.myCoordinates, place.val()]})
+                })
+            }
+        })
+        
     }
 
-    yesPressed(){
+
+    clickOnMap(latitude,longitude){
+        Alert.alert( 'הוספת מקום','האם אתה רוצה להוסיף את המקום למפה?',
+        [{text: 'לא', onPress: ()=> {return}},
+        {text: 'כן', onPress: () => this.yesPressed(latitude,longitude)}])
+    }
+
+    yesPressed(latitude,longitude){
         if(this.props.navigation.state.params.user === "")
             Alert.alert("נא להרשם/להתחבר כדי להוסיף מקום למפה");
         else
-            this.props.navigation.navigate('AddLocation',{latlng: {latitude: this.state.latitude, longitude: this.state.longitude}})
+            this.props.navigation.navigate('AddLocation',{isNew: true,latitude: latitude, longitude: longitude})
     }
 
     displayCoordinates(myCoordinates) {
@@ -37,8 +59,9 @@ class Map extends Component{
                 
 			    <Marker coordinate = {{latitude: coordinate.latitude, longitude: coordinate.longitude}}
                 onPress={(event)=>this.showPlace(event)}
-                
+                image={require('../Images/icons8-adobe-animate-100.png')}
                 >
+
                 </Marker>
             ))
         )
@@ -51,22 +74,37 @@ class Map extends Component{
         });
         Alert.alert(""+place[0].name, ""+place[0].description,
         [{text: 'יציאה', onPress: ()=> {return}},
-        {text: 'מחיקת מקום', onPress: ()=> this.deletePlace()},
-        {text: 'עריכת מקום', onPress: (place) => this.updatePlace(place)}])
+        {text: 'מחיקת מקום', onPress: ()=> this.deletePlace(place[0])},
+        {text: 'עריכת מקום', onPress: () => this.updatePlace(place[0])}])
     }
 
     updatePlace(place){
         if(this.props.navigation.state.params.user === "")
             Alert.alert("נא להרשם/להתחבר כדי לערוך מקום במפה");
         else
-            this.props.navigation.navigate('AddLocation', {place: place[0]});
+            this.props.navigation.navigate('AddLocation', {isNew: false,place: place});
     }
 
-    deletePlace(){
+    deletePlace(place){
         if(this.props.navigation.state.params.user === "")
             Alert.alert("נא להרשם/להתחבר כדי למחוק מקום מהמפה");
-        else
-            return;
+        else{
+            Alert.alert( 'האם אתה בטוח?','',
+            [{text: 'לא', onPress: ()=> {return}},
+            {text: 'כן', onPress: () => {
+                var id;
+                //Alert.alert(""+place.latitude);
+                this.placesRef.on('value',(places)=>{  
+                    places.forEach((child) =>{
+                        if(child.child('latitude').val() === place.latitude && child.child('longitude').val() === place.longitude)
+                            id = child.key;
+                        
+                    })
+                })
+                this.placesRef.child(""+id).remove();
+            }}])
+           
+        }
     }
 
     show=(value)=>
@@ -137,11 +175,7 @@ class Map extends Component{
                             longitudeDelta: 0.001
                         }}
                         onPress={(event)=>{
-                            this.setState({
-                                latitude: event.nativeEvent.coordinate.latitude,
-                                longitude: event.nativeEvent.coordinate.longitude
-                            });
-                            this.clickOnMap();
+                            this.clickOnMap(event.nativeEvent.coordinate.latitude,event.nativeEvent.coordinate.longitude);
                         }}
                         >
                         
