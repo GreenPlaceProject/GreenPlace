@@ -88,7 +88,8 @@ export default class Registeration extends Component {
 
             this.usersRef.push({                //Adding username and password to DB.
                 email: this.state.email,
-                username: this.state.username
+                username: this.state.username,
+                type: "user"
             })
 
             this.resetFields();

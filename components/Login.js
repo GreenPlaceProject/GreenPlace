@@ -4,6 +4,7 @@ import firebase from '../config/Firebase'
 import 'react-navigation'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import DropdownAlert from 'react-native-dropdownalert'
+import { RotationGestureHandler } from "react-native-gesture-handler"
 
 export default class Login extends Component {
 
@@ -145,15 +146,32 @@ export default class Login extends Component {
     }
 
     toAdminPage(){
-        this.props.navigation.navigate('CategoriesManagement');
+        if(this.state.email === "" | this.state.password === "")
+        {
+            this.dropDownAlertRef.alertWithType('warn', '', "אחד או יותר מהשדות ריקים")
+            return;
+        }
+        
+        var userType = this.getUserType();
+        if(userType === 'user'){
+            this.dropDownAlertRef.alertWithType('error', '', "גישה חסומה למשתמש זה");
+            return;
+        }
+        this.props.navigation.navigate('CategoriesManagement', {adminType : userType});
     }
 
-
-
-
-
-
-
+    getUserType(){
+        var type = 'user';
+        this.usersRef.on('value', (users) =>{
+            users.forEach((user) => {
+                if( user.val().email === this.state.email &&  user.val().type !== 'user' ){
+                    type = user.val().type;
+                    return;
+                }
+            })
+        })
+        return type;
+    }
 
     resetFields(){
         this.setState({

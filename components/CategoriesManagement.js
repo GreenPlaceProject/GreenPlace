@@ -10,8 +10,8 @@ import 'react-native-vector-icons'
 
 
 export default class CategoriesManagement extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.categoryRef = firebase.database().ref().child('Categories');
         this.state = {
             category: "",
@@ -87,16 +87,13 @@ export default class CategoriesManagement extends Component {
     }
 
 
-
-
-
     toUsersButton() {
         return (
             <View style={{ alignSelf: "flex-end", right: "-20%", top: "-40%", width: "130%", height: "13%" }}>
                 <TouchableOpacity
                     title="Return"
                     style={styles.returnButton}
-                    onPress={() => this.props.navigation.navigate('UsersManagment')}
+                    onPress={() => this.toUsersManagment()}
                 >
                     <Text style={styles.returnButtonText}>user</Text>
                 </TouchableOpacity>
@@ -104,8 +101,14 @@ export default class CategoriesManagement extends Component {
         )
     }
 
-    
+    toUsersManagment(){
+        if(this.props.navigation.state.params.adminType === 'master')
+            this.props.navigation.navigate('UsersManagment')
+        else
+            this.dropDownAlertRef.alertWithType('error', '', "למשתמש זה חסרות הרשאות");
+    }
 
+    
     addCategoryBtn() {
         return (
             <View style={styles.buttonViewStyle}>
