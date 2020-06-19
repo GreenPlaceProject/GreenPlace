@@ -18,10 +18,10 @@ export default class CategoriesManagement extends Component {
             list: null,
         };
     }
-
-    componentWillMount() {
-        this.getUpdatedList();
+    componentDidMount(){
+        this.getUpdatedList()
     }
+
     componentDidMount(){
         this.categoryRef.on('child_added', (snap) => this.getUpdatedList())
         this.categoryRef.on('child_changed', (snap) => this.getUpdatedList())
@@ -51,10 +51,7 @@ export default class CategoriesManagement extends Component {
             'שים לב!',
             "האם אתה בטוח שברצונך למחוק את '" + child.val() + "' ?",
             [
-                {
-                    text: 'ביטול',
-                    style: 'cancel'
-                },
+                { text: 'ביטול', style: 'cancel' },
                 { text: 'מחק', onPress: () => this.categoryDelete(child.key) }
             ],
             { cancelable: false }
@@ -94,13 +91,13 @@ export default class CategoriesManagement extends Component {
 
     toUsersButton() {
         return (
-            <View style={{ alignSelf: "flex-end", right: "-20%", top: "-40%", width: "130%", height: "13%" }}>
+            <View style={{paddingTop: "3%", width: "50%", alignSelf: "center", borderColor: "grey"}}>
                 <TouchableOpacity
                     title="Return"
-                    style={styles.returnButton}
+                    style={{height: 45, alignItems: 'center', justifyContent: 'center', backgroundColor: '#006400', borderColor: "#004577", borderWidth: 3, borderRadius: 10,}}
                     onPress={() => this.toUsersManagment()}
                 >
-                    <Text style={styles.returnButtonText}>user</Text>
+                    <Text style={styles.returnButtonText}>ניהול משתמשים</Text>
                 </TouchableOpacity>
             </View>
         )
@@ -163,8 +160,8 @@ export default class CategoriesManagement extends Component {
                         centerComponent={{ text: 'ניהול קטגוריות', style: styles.centerComponentStyle }}
                         backgroundColor="#e6ffe6"
                         rightComponent={this.returnButton()}
-                        leftComponent={this.toUsersButton()}
                     />
+                    <View>{this.toUsersButton()}</View>
                     <View>
                         <View>{this.addCategoryBtn()}</View>
 

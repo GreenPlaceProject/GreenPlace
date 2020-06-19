@@ -4,7 +4,6 @@ import firebase from '../config/Firebase'
 import 'react-navigation'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import DropdownAlert from 'react-native-dropdownalert'
-import { RotationGestureHandler } from "react-native-gesture-handler"
 
 export default class Login extends Component {
 
@@ -133,55 +132,47 @@ export default class Login extends Component {
 
     adminButton(){
         return (
-            <View style = {{ width: "20%", borderColor : "grey", alignItems : "center"}}>
+            <View style = {{top:'0%',paddingTop: "18%",paddingStart: "1%", width: "15%", borderColor : "grey"}}>
                 <TouchableOpacity
                     title = "admin"
                     style={{
-                        alignItems:'center',
                         justifyContent:'center',
                         backgroundColor:'#006400',
                         borderColor: "#004577",
                         borderWidth: 3 ,
-                        borderRadius: 50,
                     }}
                     onPress = {()=> this.toAdminPage()}
                 >
-                <Text style = {{fontSize: 15, color: "#fff" }}>כניסה למנהל</Text>
+                <Text style = {{fontSize: 15, color: "#fff",textAlign:"center" }}>כניסה למנהל</Text>
                 </TouchableOpacity>
             </View>
         )
     }
 
-    toAdminPage(){
+    async toAdminPage(){
         if(this.state.email === "" | this.state.password === "")
         {
             this.dropDownAlertRef.alertWithType('warn', '', "אחד או יותר מהשדות ריקים")
             return;
         }
 
-        var userType = this.getUserType();
-        if(userType === 'משתמש'){
-            this.dropDownAlertRef.alertWithType('error', '', "גישה חסומה למשתמש זה");
-            this.resetFields();
-            return;
-        }
-        this.resetFields();
-        this.props.navigation.navigate('CategoriesManagement', {adminType : userType});
-
-    }
-
-    getUserType(){
-        var type = 'משתמש';
-        this.usersRef.on('value', (users) =>{
-            users.forEach((user) => {
-                if( user.val().email === this.state.email &&  user.val().type !== 'משתמש' ){
-                    type = user.val().type;
-                    return;
-                }
+        this.usersRef.once("value")
+            .then((users) => {
+                users.forEach((user) => {
+                    if (user.val().email === this.state.email && user.val().type !== 'משתמש') {
+                        firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
+                            .then(() => {
+                                this.resetFields();
+                                this.props.navigation.navigate('CategoriesManagement', { adminType: user.val().type });
+                            })
+                            .catch(() => this.dropDownAlertRef.alertWithType('warn', '', "המייל או הסיסמא אינם נכונים"))
+                    }
+                })
+                this.dropDownAlertRef.alertWithType('warn', '', "למשתמש זה חסרות הרשאות")
             })
-        })
-        return type;
+            .catch(() => this.dropDownAlertRef.alertWithType('warn', '', "קרתה תקלה, אנא נסה שנית"))
     }
+
 
     resetFields(){
         this.setState({
@@ -238,17 +229,6 @@ export default class Login extends Component {
                         <View>{this.registerButton()}</View>
                         <View>{this.guestButton()}</View>
                         <View>{this.adminButton()}</View>
-                        <View>
-                        <Image
-                            source={require("../Images/App_Logo.jpg")}
-                            style={{
-                                height: "25%",
-                                width: "100%",
-                                alignSelf: "center",
-                                resizeMode: "stretch",       
-                            }}
-                        />
-                        </View>
 
                     </KeyboardAwareScrollView>
                 </ImageBackground>
