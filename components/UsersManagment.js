@@ -1,5 +1,5 @@
 import React, { Component } from "react"
-import { View, TouchableOpacity, Text, ImageBackground, Alert, Image } from "react-native"
+import { View, TouchableOpacity, Text, ImageBackground, Alert } from "react-native"
 import { Header } from "react-native-elements"
 import firebase from '../config/Firebase'
 import 'react-navigation'
@@ -106,7 +106,6 @@ export default class UsersManagment extends Component {
 
 
     changeUser(userInfo,newType) {
-
         firebase.database().ref('Users/'+ userInfo.key).set({
             email: userInfo.val().email,
             type: newType,
@@ -120,37 +119,30 @@ export default class UsersManagment extends Component {
     render() {
         return (
             <View height = "100%" width = "100%" style = {{flex:1}}>
-            <ImageBackground source={require('../Images/BackGround.jpg')} imageStyle={{ opacity: 0.15 }} style={{ flex: 1, height: "100%" }}>
-                <KeyboardAwareScrollView enableOnAndroid="true" >
-                    <Header
-                        centerComponent={{ text: 'ניהול משתמשים', style: styles.centerComponentStyle }}
-                        backgroundColor="#e6ffe6"
-                        rightComponent={this.returnButton()}
-                    />
-
-                    <View
-                        styles
-                        >
-                        {this.toCategoriesButton()}
-                        </View>
-
-                    <List.Section>
-                        <List.Subheader>לשינוי הרשאות - לחץ על שם משתמש</List.Subheader>
-                        {this.state.usersList}
-
-                    </List.Section>
-
-                {/* <View style = {{ position: "absolute", top: "90%",width:"100%",height:"40%"}}>
-                    <Image
-                        source={require ("../Images/App_Logo.jpg")}
-                        style={styles.image}
+                <ImageBackground source={require('../Images/BackGround.jpg')} imageStyle={{ opacity: 0.15 }} style={{ flex: 1, height: "100%" }}>
+                    <KeyboardAwareScrollView enableOnAndroid="true" >
+                        <Header
+                            centerComponent={{ text: 'ניהול משתמשים', style: styles.centerComponentStyle }}
+                            backgroundColor="#e6ffe6"
+                            rightComponent={this.returnButton()}
                         />
-                </View> */}
-                        </KeyboardAwareScrollView>
-                <View style={{ position: "absolute", top: "0%", right: "25%", width: "50%", height: "40%" }}>
-                    <DropdownAlert ref={ref => this.dropDownAlertRef = ref} />
-                </View>
-            </ImageBackground>
+
+                        <View>{this.toCategoriesButton()}</View>
+
+                        <List.Section>
+                            <List.Subheader>לשינוי הרשאות - לחץ על שם משתמש</List.Subheader>
+                            {this.state.usersList}
+
+                        </List.Section>
+
+                    </KeyboardAwareScrollView>
+
+                    <View style={{ position: "absolute", top: "0%", right: "25%", width: "50%", height: "40%" }}>
+                        <DropdownAlert ref={ref => this.dropDownAlertRef = ref} />
+                    </View>
+
+                </ImageBackground>
+
             </View>
         )
     }
