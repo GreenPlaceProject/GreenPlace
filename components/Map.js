@@ -15,13 +15,17 @@ class Map extends Component{
             pickerSelectedLabel:'',
             latitude:'',
             longitude:'',
-            myCoordinates: []
+            myCoordinates: [],
+            pickers: []
         };
     }
 
-    componentDidMount() {
         
-        this.placesRef.on('child_changed',places=>{ 
+
+
+
+    componentDidMount() {
+        this.placesRef.on('value',places=>{ 
             this.setState({myCoordinates:[]});
             places.forEach((place) =>{
                 this.setState({myCoordinates: [...this.state.myCoordinates, place.val()]})
@@ -29,13 +33,27 @@ class Map extends Component{
         })
         
     
-        this.placesRef.on('value',(places)=>{ 
+        /*this.placesRef.on('value',(places)=>{ 
             if(this.state.myCoordinates.length < 1){ 
                 places.forEach((place) =>{
                     this.setState({myCoordinates: [...this.state.myCoordinates, place.val()]})
                 })
             }
+        })*/
+
+        var pickers_list = [];
+        pickers_list.push(<Picker.Item label="בחר קטגוריה" value="1"></Picker.Item>)
+        var i=2;
+        firebase.database().ref().child('Categories').orderByChild('value').on('value',(categories)=>{
+            categories.forEach((category)=>{
+                pickers_list.push(
+                        <Picker.Item label = { category.val()} value={i} ></Picker.Item>
+                )
+                i++;
+            })
         })
+        pickers_list.push(<Picker.Item label="אחר" value={i}></Picker.Item>)
+        this.setState({pickers : pickers_list})
         
     }
 
@@ -56,7 +74,6 @@ class Map extends Component{
     displayCoordinates(myCoordinates) {
         return(
             myCoordinates.map((coordinate, i) => (
-                
 			    <Marker coordinate = {{latitude: coordinate.latitude, longitude: coordinate.longitude}}
                 onPress={(event)=>this.showPlace(event)}
                 image={require('../Images/icons8-adobe-animate-100.png')}
@@ -148,19 +165,7 @@ class Map extends Component{
                         selectedValue={this.state.pickerSelectedLabel}
                         onValueChange={this.show.bind()}
                         style={{position:'absolute',left:0 , bottom:10 , right:5}}>
-                        <Picker.Item label="בחר קטגוריה" value="1" ></Picker.Item>
-                        <Picker.Item label="אתר פריחה" value="2"></Picker.Item>
-                        <Picker.Item label="אתר צפרות וצפיית חיות בר" value="3"></Picker.Item>
-                        <Picker.Item label="גינה ציבורית" value="4"></Picker.Item>
-                        <Picker.Item label="גינה קהילתית" value="5"></Picker.Item>
-                        <Picker.Item label="חנות אופניים" value="6"></Picker.Item>
-                        <Picker.Item label="חנות טבע" value="7"></Picker.Item>
-                        <Picker.Item label="חנות יד שניה" value="8"></Picker.Item>
-                        <Picker.Item label="ספריית רחוב" value="9"></Picker.Item>
-                        <Picker.Item label="עץ פרי" value="10"></Picker.Item>
-                        <Picker.Item label="פח מיחזור" value="11"></Picker.Item>
-                        <Picker.Item label="צמח מאכל ומרפא" value="12"></Picker.Item>
-                        <Picker.Item label="קומפוסטר" value="13"></Picker.Item>  
+                        {this.state.pickers}
                     </Picker>
                     
                 </View>
@@ -221,32 +226,18 @@ const styles = {
 
 }
 
-                        /*<Marker
-                            coordinate={{latitude:31.756106, longitude:35.165088}}>
+                        
 
-                            <Callout onPress={()=>this.props.navigation.navigate('AddLocation')}><Button><Text>הוספת מקום</Text></Button></Callout>
-                        </Marker> 
-
-                        <Marker
-                            coordinate={{latitude:31.756806, longitude:35.165088}}>
-
-                            <Callout onPress={()=>this.props.navigation.navigate('AddLocation')}><Button><Text>הוספת מקום</Text></Button></Callout>
-                        </Marker> 
-
-                        <Marker
-                            coordinate={{latitude:31.756106, longitude:35.165988}}>
-
-                            <Callout onPress={()=>this.props.navigation.navigate('AddLocation')}><Button><Text>הוספת מקום</Text></Button></Callout>
-                        </Marker> 
-
-                        <Marker
-                            coordinate={{latitude:31.756306, longitude:35.165988}}>
-
-                            <Callout><Text>גינה קהילתית</Text></Callout>
-                        </Marker> 
-
-                        <Marker
-                            coordinate={{latitude:31.756106, longitude:35.166988}}>
-
-                            <Callout><Text>חנות טבע</Text></Callout>
-                        </Marker> */
+                        /* <Picker.Item label="בחר קטגוריה" value="1" ></Picker.Item>
+                        <Picker.Item label="אתר פריחה" value="2"></Picker.Item>
+                        <Picker.Item label="אתר צפרות וצפיית חיות בר" value="3"></Picker.Item>
+                        <Picker.Item label="גינה ציבורית" value="4"></Picker.Item>
+                        <Picker.Item label="גינה קהילתית" value="5"></Picker.Item>
+                        <Picker.Item label="חנות אופניים" value="6"></Picker.Item>
+                        <Picker.Item label="חנות טבע" value="7"></Picker.Item>
+                        <Picker.Item label="חנות יד שניה" value="8"></Picker.Item>
+                        <Picker.Item label="ספריית רחוב" value="9"></Picker.Item>
+                        <Picker.Item label="עץ פרי" value="10"></Picker.Item>
+                        <Picker.Item label="פח מיחזור" value="11"></Picker.Item>
+                        <Picker.Item label="צמח מאכל ומרפא" value="12"></Picker.Item>
+                        <Picker.Item label="קומפוסטר" value="13"></Picker.Item>*/
