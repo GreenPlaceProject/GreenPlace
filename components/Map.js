@@ -11,6 +11,7 @@ class Map extends Component{
     constructor(props) {
         super(props);
         this.placesRef = firebase.database().ref().child('Places');
+        this.pickersRef = firebase.database().ref().child('Categories');
         this.state = {
             pickerSelectedLabel:'',
             latitude:'',
@@ -21,41 +22,59 @@ class Map extends Component{
     }
 
         
-
-
+    componentWillMount(){
+        this.getPickers();
+        this.getPlaces();
+    }
 
     componentDidMount() {
-        this.placesRef.on('value',places=>{ 
-            this.setState({myCoordinates:[]});
+        this.pickersRef.on('child_added', (snap) => this.getPickers())
+        this.pickersRef.on('child_changed', (snap) => this.getPickers())
+        this.pickersRef.on('child_removed', (snap) => this.getPickers())
+        
+        this.placesRef.on('child_added', (snap) => this.getPlaces())
+        this.placesRef.on('child_changed', (snap) => this.getPlaces())
+        this.placesRef.on('child_removed', (snap) => this.getPlaces())
+        
+    }
+
+    getPlaces(){
+        var placesList = [];
+        this.placesRef.on('value', places => {
             places.forEach((place) =>{
-                this.setState({myCoordinates: [...this.state.myCoordinates, place.val()]})
+                placesList.push(
+                    <Marker coordinate = {{latitude: place.val().latitude, longitude: place.val().longitude}}
+                    onPress={(event)=>this.showPlace(event)}
+                    image={require('../Images/icons8-adobe-animate-100.png')}
+                    /> 
+                )
             })
         })
-        
-    
-        /*this.placesRef.on('value',(places)=>{ 
-            if(this.state.myCoordinates.length < 1){ 
-                places.forEach((place) =>{
-                    this.setState({myCoordinates: [...this.state.myCoordinates, place.val()]})
-                })
-            }
-        })*/
 
+        this.setState({ myCoordinates : placesList })
+    }
+
+
+    getPickers() {
         var pickers_list = [];
         pickers_list.push(<Picker.Item label="בחר קטגוריה" value="1"></Picker.Item>)
-        var i=2;
-        firebase.database().ref().child('Categories').orderByChild('value').on('value',(categories)=>{
-            categories.forEach((category)=>{
+        var i = 2;
+        this.pickersRef.orderByValue().on('value', (categories) => {
+            categories.forEach((category) => {
                 pickers_list.push(
-                        <Picker.Item label = { category.val()} value={i} ></Picker.Item>
+                    <Picker.Item label={category.val()} value={i} ></Picker.Item>
                 )
                 i++;
             })
         })
         pickers_list.push(<Picker.Item label="אחר" value={i}></Picker.Item>)
-        this.setState({pickers : pickers_list})
-        
+        this.setState({ pickers: pickers_list })
     }
+
+
+
+
+
 
 
     clickOnMap(latitude,longitude){
@@ -184,8 +203,8 @@ class Map extends Component{
                         }}
                         >
                         
-                        {this.displayCoordinates(this.state.myCoordinates)}
-                        
+                        {this.state.myCoordinates}
+
                     </MapView>
                 </View>
             </View>
@@ -225,19 +244,3 @@ const styles = {
     },
 
 }
-
-                        
-
-                        /* <Picker.Item label="בחר קטגוריה" value="1" ></Picker.Item>
-                        <Picker.Item label="אתר פריחה" value="2"></Picker.Item>
-                        <Picker.Item label="אתר צפרות וצפיית חיות בר" value="3"></Picker.Item>
-                        <Picker.Item label="גינה ציבורית" value="4"></Picker.Item>
-                        <Picker.Item label="גינה קהילתית" value="5"></Picker.Item>
-                        <Picker.Item label="חנות אופניים" value="6"></Picker.Item>
-                        <Picker.Item label="חנות טבע" value="7"></Picker.Item>
-                        <Picker.Item label="חנות יד שניה" value="8"></Picker.Item>
-                        <Picker.Item label="ספריית רחוב" value="9"></Picker.Item>
-                        <Picker.Item label="עץ פרי" value="10"></Picker.Item>
-                        <Picker.Item label="פח מיחזור" value="11"></Picker.Item>
-                        <Picker.Item label="צמח מאכל ומרפא" value="12"></Picker.Item>
-                        <Picker.Item label="קומפוסטר" value="13"></Picker.Item>*/
