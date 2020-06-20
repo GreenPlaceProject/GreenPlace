@@ -18,26 +18,27 @@ export default class CategoriesManagement extends Component {
             list: null,
         };
     }
-    componentDidMount(){
+
+    componentWillMount() {
         this.getUpdatedList()
     }
 
-    componentDidMount(){
+    componentDidMount() {
         this.categoryRef.on('child_added', (snap) => this.getUpdatedList())
         this.categoryRef.on('child_changed', (snap) => this.getUpdatedList())
         this.categoryRef.on('child_removed', (snap) => this.getUpdatedList())
     }
 
-    getUpdatedList(){
+    getUpdatedList() {
         var l = [];
-        
-        this.categoryRef.orderByValue().on('value', (snap) => {
-            snap.forEach((child) => {
+
+        this.categoryRef.orderByValue().on('value', (categories) => {
+            categories.forEach((category) => {
                 l.push(
                     <List.Item
-                        title={child.val()}
+                        title={category.val()}
                         left={props => <List.Icon {...props} icon="camera" />}
-                        onPress={() => this.categoryDeleteConfirmation(child)}
+                        onPress={() => this.categoryDeleteConfirmation(category)}
                     />
                 )
             })
@@ -59,10 +60,10 @@ export default class CategoriesManagement extends Component {
     }
 
 
-    categoryDelete(key){
+    categoryDelete(key) {
         firebase.database().ref('Categories/' + key).remove()
-        .then(()=> this.dropDownAlertRef.alertWithType('success', '', "קטגוריה נמחקה"))
-        .catch(()=> this.dropDownAlertRef.alertWithType('error', '', "מחיקה נכשלה"))
+            .then(() => this.dropDownAlertRef.alertWithType('success', '', "קטגוריה נמחקה"))
+            .catch(() => this.dropDownAlertRef.alertWithType('error', '', "מחיקה נכשלה"))
     }
 
 
@@ -74,46 +75,49 @@ export default class CategoriesManagement extends Component {
                     style={styles.returnButton}
                     onPress={() => this.exitAdminScreen()}
                 >
-                    <Text style={styles.returnButtonText}>יציאה</Text>
+                    <Text style={styles.returnButtonText}>התנתקות</Text>
                 </TouchableOpacity>
             </View>
         )
     }
 
-    exitAdminScreen(){
+    exitAdminScreen() {
         firebase.auth().signOut()
-            .then(()=>{
+            .then(() => {
                 this.props.navigation.navigate('Login')
             })
-            .catch(()=> this.dropDownAlertRef.alertWithType('warn', '', "התנתקות נכשלה"))
+            .catch(() => this.dropDownAlertRef.alertWithType('warn', '', "התנתקות נכשלה"))
     }
 
 
     toUsersButton() {
         return (
-            <View style={{paddingTop: "3%", width: "50%", alignSelf: "center", borderColor: "grey"}}>
+            <View style={{ paddingTop: "3%", width: "50%", alignSelf: "center", borderColor: "grey" }}>
+
                 <TouchableOpacity
                     title="Return"
-                    style={{height: 45, alignItems: 'center', justifyContent: 'center', backgroundColor: '#006400', borderColor: "#004577", borderWidth: 3, borderRadius: 10,}}
+                    style={{ height: 45, alignItems: 'center', justifyContent: 'center', backgroundColor: '#006400', borderColor: "#004577", borderWidth: 3, borderRadius: 10, }}
                     onPress={() => this.toUsersManagment()}
                 >
                     <Text style={styles.returnButtonText}>ניהול משתמשים</Text>
                 </TouchableOpacity>
+                
             </View>
         )
     }
 
-    toUsersManagment(){
-        if(this.props.navigation.state.params.adminType === 'master')
+    toUsersManagment() {
+        if (this.props.navigation.state.params.adminType === 'master')
             this.props.navigation.navigate('UsersManagment')
         else
             this.dropDownAlertRef.alertWithType('error', '', "למשתמש זה חסרות הרשאות");
     }
 
-    
+
     addCategoryBtn() {
         return (
             <View style={styles.buttonViewStyle}>
+
                 <TouchableOpacity
                     title="add"
                     style={styles.buttonStyle}
@@ -121,6 +125,7 @@ export default class CategoriesManagement extends Component {
                 >
                     <Text style={styles.buttonTextStyle}>הוסף קטגוריה</Text>
                 </TouchableOpacity>
+
             </View>
         )
     }
@@ -130,62 +135,75 @@ export default class CategoriesManagement extends Component {
             this.dropDownAlertRef.alertWithType('warn', '', "אנא הכנס שם קטגוריה להוספה")
             return;
         }
+
         var exist = false;
         this.categoryRef.on("value", (snap) => {
             snap.forEach((cat) => {
-                    if(cat.val() === this.state.category){
-                        exist = true;
-                        return;
-                    }
-                })
+                if (cat.val() === this.state.category) {
+                    exist = true;
+                    return;
+                }
+            })
         })
-        if(exist){
+
+        if (exist) {
             this.dropDownAlertRef.alertWithType('warn', '', "הקטגוריה כבר קיימת")
-            this.setState({category : ""})
+            this.setState({ category: "" })
             return;
         }
+
         this.categoryRef.push(this.state.category);
-        this.dropDownAlertRef.alertWithType('info', '', "קטגוריה נוספה בהצלחה!") 
+        this.dropDownAlertRef.alertWithType('info', '', "קטגוריה נוספה בהצלחה!")
         this.setState({ category: "" })
     }
 
 
     render() {
         return (
-            <View height = "100%" width = "100%" style = {{flex:1}}>
-            <ImageBackground source={require('../Images/BackGround.jpg')} imageStyle={{ opacity: 0.15 }} style={{ flex: 1, height: "100%" }}>
-                <KeyboardAwareScrollView enableOnAndroid="true" >
+            <View height="100%" width="100%" style={{ flex: 1 }}>
+                
+                <ImageBackground source={require('../Images/BackGround.jpg')} imageStyle={{ opacity: 0.15 }} style={{ flex: 1, height: "100%" }}>
+                    
+                    <KeyboardAwareScrollView enableOnAndroid="true" >
 
-                    <Header
-                        centerComponent={{ text: 'ניהול קטגוריות', style: styles.centerComponentStyle }}
-                        backgroundColor="#e6ffe6"
-                        rightComponent={this.returnButton()}
-                    />
-                    <View>{this.toUsersButton()}</View>
-                    <View>
-                        <View>{this.addCategoryBtn()}</View>
+                        <Header
+                            centerComponent={{ text: 'ניהול קטגוריות', style: styles.centerComponentStyle }}
+                            backgroundColor="#e6ffe6"
+                            rightComponent={this.returnButton()}
+                        />
 
-                        <View style={{ position: "absolute", paddingTop: "8%", width: "55%", left: "2%", borderColor: "grey", }}>
-                            <TextInput style={{ borderColor: "#006400", borderRadius: 15, borderWidth: 3, fontSize: 20, width: "80%", height: "85%", alignSelf: "center", textAlign: 'center' }}
-                                placeholder="שם קטגוריה"
-                                placeholderTextColor="#006400"
-                                autoCorrect={false}
-                                onChangeText={category => this.setState({ category })}
-                                value={this.state.category}
-                                onSubmitEditing={() => this.addCategoryFunc()}
-                            />
+                        <View>{this.toUsersButton()}</View>
+
+                        <View>
+
+                            <View>{this.addCategoryBtn()}</View>
+
+                            <View style={{ position: "absolute", paddingTop: "8%", width: "55%", left: "2%", borderColor: "grey", }}>
+                                <TextInput style={{ borderColor: "#006400", borderRadius: 15, borderWidth: 3, fontSize: 20, width: "80%", height: "85%", alignSelf: "center", textAlign: 'center' }}
+                                    placeholder="שם קטגוריה"
+                                    placeholderTextColor="#006400"
+                                    autoCorrect={false}
+                                    onChangeText={category => this.setState({ category })}
+                                    value={this.state.category}
+                                    onSubmitEditing={() => this.addCategoryFunc()}
+                                />
+                            </View>
+
                         </View>
+
+                        <List.Section>
+                            <List.Subheader>למחיקה - לחץ על קטגוריה</List.Subheader>
+                            {this.state.list}
+                        </List.Section>
+
+                    </KeyboardAwareScrollView>
+
+                    <View style={{ position: "absolute", top: "0%", right: "25%", width: "50%", height: "40%" }}>
+                        <DropdownAlert ref={ref => this.dropDownAlertRef = ref} />
                     </View>
 
-                    <List.Section>
-                        <List.Subheader>למחיקה - לחץ על קטגוריה</List.Subheader>
-                            {this.state.list}
-                    </List.Section>
-                </KeyboardAwareScrollView>
-                <View style={{ position: "absolute", top: "0%", right: "25%", width: "50%", height: "40%"}}>
-                    <DropdownAlert ref={ref => this.dropDownAlertRef = ref} />
-                </View>
-            </ImageBackground>
+                </ImageBackground>
+
             </View>
         )
     }

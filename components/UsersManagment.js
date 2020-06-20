@@ -26,8 +26,8 @@ export default class UsersManagment extends Component {
     componentWillMount() {
         this.getUpdatedList();
     }
-    
-    componentDidMount(){
+
+    componentDidMount() {
         this.usersRef.on('child_added', (snap) => this.getUpdatedList())
         this.usersRef.on('child_changed', (snap) => this.getUpdatedList())
         this.usersRef.on('child_removed', (snap) => this.getUpdatedList())
@@ -36,15 +36,16 @@ export default class UsersManagment extends Component {
     getUpdatedList() {
         var list = [];
         var type;
-        this.usersRef.orderByChild('username').on('value', (snap) => {
-            snap.forEach((child) => {
-                type = child.val().type;
-                if(type === 'משתמש' || type === 'מנהל')
+
+        this.usersRef.orderByChild('username').on('value', (users) => {
+            users.forEach((user) => {
+                type = user.val().type;
+                if (type === 'משתמש' || type === 'מנהל')
                     list.push(
                         <List.Item
-                            title={child.val().username}
-                            description = {type}
-                            onPress={() => this.changeUserConfirmation(child)}
+                            title={user.val().username}
+                            description={type}
+                            onPress={() => this.changeUserConfirmation(user)}
                         />
                     )
             })
@@ -56,28 +57,29 @@ export default class UsersManagment extends Component {
     returnButton() {
         return (
             <View style={{ alignSelf: "flex-end", right: "-20%", top: "-40%", width: "130%", height: "13%" }}>
+
                 <TouchableOpacity
                     title="Return"
                     style={styles.returnButton}
                     onPress={() => this.exitAdminScreen()}
                 >
-                    <Text style={styles.returnButtonText}>יציאה</Text>
+                    <Text style={styles.returnButtonText}>התנתק</Text>
                 </TouchableOpacity>
+
             </View>
         )
     }
-    
-    exitAdminScreen(){
+
+    exitAdminScreen() {
         firebase.auth().signOut()
-            .then(()=>{
-                this.props.navigation.navigate('Login')
-            })
-            .catch(()=> this.dropDownAlertRef.alertWithType('warn', '', "התנתקות נכשלה"))
+            .then(() => this.props.navigation.navigate('Login'))
+            .catch(() => this.dropDownAlertRef.alertWithType('warn', '', "התנתקות נכשלה"))
     }
 
     toCategoriesButton() {
         return (
-            <View style = {styles.buttonViewStyle}>
+            <View style={styles.buttonViewStyle}>
+
                 <TouchableOpacity
                     title="Return"
                     style={styles.buttonStyle}
@@ -85,6 +87,7 @@ export default class UsersManagment extends Component {
                 >
                     <Text style={styles.returnButtonText}>ניהול קטגוריות</Text>
                 </TouchableOpacity>
+
             </View>
         )
     }
@@ -96,17 +99,16 @@ export default class UsersManagment extends Component {
             "האם אתה בטוח שברצונך לשנות את '" + child.val().username + "' ?",
             [
                 { text: 'ביטול', style: 'cancel' },
-                { text: 'שנה למנהל', onPress: () =>  this.changeUser(child,'מנהל') },
-                { text: 'שנה למשתמש', onPress: () => this.changeUser(child,'משתמש') }
+                { text: 'שנה למנהל', onPress: () => this.changeUser(child, 'מנהל') },
+                { text: 'שנה למשתמש', onPress: () => this.changeUser(child, 'משתמש') }
             ],
             { cancelable: false }
         );
-
     }
 
 
-    changeUser(userInfo,newType) {
-        firebase.database().ref('Users/'+ userInfo.key).set({
+    changeUser(userInfo, newType) {
+        firebase.database().ref('Users/' + userInfo.key).set({
             email: userInfo.val().email,
             type: newType,
             username: userInfo.val().username
@@ -118,9 +120,13 @@ export default class UsersManagment extends Component {
 
     render() {
         return (
-            <View height = "100%" width = "100%" style = {{flex:1}}>
+            <View height="100%" width="100%" style={{ flex: 1 }}>
+
+                
                 <ImageBackground source={require('../Images/BackGround.jpg')} imageStyle={{ opacity: 0.15 }} style={{ flex: 1, height: "100%" }}>
+                    
                     <KeyboardAwareScrollView enableOnAndroid="true" >
+                        
                         <Header
                             centerComponent={{ text: 'ניהול משתמשים', style: styles.centerComponentStyle }}
                             backgroundColor="#e6ffe6"
@@ -132,7 +138,7 @@ export default class UsersManagment extends Component {
                         <List.Section>
                             <List.Subheader>לשינוי הרשאות - לחץ על שם משתמש</List.Subheader>
                             {this.state.usersList}
-
+                            
                         </List.Section>
 
                     </KeyboardAwareScrollView>
@@ -185,13 +191,5 @@ const styles = {
     returnButtonText: {
         fontSize: 20,
         color: "#fff"
-    },
-    image: {
-        height: "25%",
-        width: "100%",
-        alignSelf: "center",
-        marginBottom: "5%", 
-        paddingBottom: "9%",
-        resizeMode: "stretch"
-    },
+    }
 }

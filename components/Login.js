@@ -1,5 +1,5 @@
-import React, {Component } from "react"
-import {View, TextInput, Image, TouchableOpacity, Text, ImageBackground} from "react-native"
+import React, { Component } from "react"
+import { View, TextInput, Image, TouchableOpacity, Text, ImageBackground } from "react-native"
 import firebase from '../config/Firebase'
 import 'react-navigation'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -12,146 +12,144 @@ export default class Login extends Component {
         this.usersRef = firebase.database().ref().child('Users');
         this.state = {
             email: "",
-            password: "",                  
+            password: "",
             pressed_login: false,
             pressed_register: false,
             pressed_as_a_guest: false
         }
-    } 
+    }
 
 
-        //A function returning TouchableOpacity for 'forgot password' button
-    forgotPasswordButton(){
+    //A function returning TouchableOpacity for 'forgot password' button
+    forgotPasswordButton() {
         return (
-            <View style = {{ width: "30%",left: "67%"}}>
+            <View style={{ width: "30%", left: "67%" }}>
                 <TouchableOpacity
-                    title = "forgotpassword"
-                    onPress = {()=> this.forgotPassword()}
+                    title="forgotpassword"
+                    onPress={() => this.forgotPassword()}
                 >
-                <Text style = {{fontSize: 15,color : "black"}}>שכחתי סיסמא</Text>
+                    <Text style={{ fontSize: 15, color: "black" }}>שכחתי סיסמא</Text>
                 </TouchableOpacity>
-             </View>
+            </View>
         )
     }
-        //Forgot password function
-    forgotPassword(){
+    //Forgot password function
+    forgotPassword() {
 
-        if(this.state.email === ""){
+        if (this.state.email === "") {
             this.dropDownAlertRef.alertWithType('warn', '', "אנא הכנס דוא'ל");
             return;
         }
 
         firebase.auth().sendPasswordResetEmail(this.state.email)
-        .then(() => this.dropDownAlertRef.alertWithType('info', '', 'מייל לאיפוס סיסמא נשלח בהצלחה'))
-        .catch(() => this.dropDownAlertRef.alertWithType('info', '', 'מייל לאיפוס סיסמא נשלח בהצלחה'))
+            .then(() => this.dropDownAlertRef.alertWithType('info', '', 'מייל לאיפוס סיסמא נשלח בהצלחה'))
+            .catch(() => this.dropDownAlertRef.alertWithType('info', '', 'מייל לאיפוס סיסמא נשלח בהצלחה'))
         this.resetFields();
     }
 
-        //A function returning TouchableOpacity for 'Login' button
+    //A function returning TouchableOpacity for 'Login' button
     LoginButton() {
         return (
-            <View style = {styles.buttonViewStyle}>
+            <View style={styles.buttonViewStyle}>
                 <TouchableOpacity
-                    title = "signIn"
+                    title="signIn"
                     style={styles.buttonStyle}
-                    onPress = {()=> this.login()}
+                    onPress={() => this.login()}
                 >
-                <Text style = {styles.buttonTextStyle}>הכנס</Text>
+                    <Text style={styles.buttonTextStyle}>הכנס</Text>
                 </TouchableOpacity>
             </View>
         )
     }
 
-        //Login and input validation checks function
-    login(){    
+    //Login and input validation checks function
+    login() {
 
-        if(this.state.email === "" | this.state.password === "")
-        {
+        if (this.state.email === "" | this.state.password === "") {
             this.dropDownAlertRef.alertWithType('warn', '', "אחד או יותר מהשדות ריקים")
             return;
-        } 
+        }
 
-        firebase.auth().signInWithEmailAndPassword(this.state.email,this.state.password)
-        .then(() =>{ 
-            this.usersRef.on('value',(snap)=>{
-                snap.forEach((child) =>{
-                    if(child.val().email === this.state.email){
-                        this.resetFields();
-                        this.props.navigation.navigate('Map',{user : child.val().username, btn : "התנתק", intro : ""})                        
-                    }
+        firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
+            .then(() => {
+                this.usersRef.on('value', (snap) => {
+                    snap.forEach((child) => {
+                        if (child.val().email === this.state.email) {
+                            this.resetFields();
+                            this.props.navigation.navigate('Map', { user: child.val().username, btn: "התנתק", intro: "" })
+                        }
+                    })
                 })
             })
-        })
-        .catch(() => this.dropDownAlertRef.alertWithType('warn', '', "המייל או הסיסמא אינם נכונים"))
+            .catch(() => this.dropDownAlertRef.alertWithType('warn', '', "המייל או הסיסמא אינם נכונים"))
     }
 
-        //A function returning TouchableOpacity for 'Register' button
+    //A function returning TouchableOpacity for 'Register' button
     registerButton() {
 
         return (
-            <View style = {styles.buttonViewStyle}>
+            <View style={styles.buttonViewStyle}>
                 <TouchableOpacity
-                    title = "register"
+                    title="register"
                     style={styles.buttonStyle}
-                    onPress = {()=> this.registerTransfer()}
+                    onPress={() => this.registerTransfer()}
                 >
-                <Text style = {styles.buttonTextStyle}>הרשם</Text>
+                    <Text style={styles.buttonTextStyle}>הרשם</Text>
                 </TouchableOpacity>
             </View>
         )
     }
 
 
-    registerTransfer(){
+    registerTransfer() {
         this.resetFields();
         this.props.navigation.navigate('Registration');
     }
 
-        //A function returning TouchableOpacity for 'Enter as a Guest' button
-    guestButton(){
+    //A function returning TouchableOpacity for 'Enter as a Guest' button
+    guestButton() {
         return (
-            <View style = {styles.buttonViewStyle}>
+            <View style={styles.buttonViewStyle}>
                 <TouchableOpacity
-                    title = "asAGuest"
+                    title="asAGuest"
                     style={styles.buttonStyle}
-                    onPress = {()=> this.enterAsAGuest()}
+                    onPress={() => this.enterAsAGuest()}
                 >
-                <Text style = {styles.buttonTextStyle}>הכנס כאורח</Text>
+                    <Text style={styles.buttonTextStyle}>הכנס כאורח</Text>
                 </TouchableOpacity>
             </View>
         )
     }
 
-    enterAsAGuest(){
+    enterAsAGuest() {
         this.resetFields();
-        this.props.navigation.navigate('Map',{ user : "" , btn : "חזור"})
+        this.props.navigation.navigate('Map', { user: "", btn: "חזור" })
     }
 
 
 
 
-    adminButton(){
+    adminButton() {
         return (
-            <View style = {{top:'0%',paddingTop: "18%",paddingStart: "1%", width: "15%", borderColor : "grey"}}>
+            <View style={{ top: '0%', paddingTop: "18%", paddingStart: "1%", width: "15%", borderColor: "grey" }}>
                 <TouchableOpacity
-                    title = "admin"
+                    title="admin"
                     style={{
-                        justifyContent:'center',
-                        backgroundColor:'#006400',
+                        justifyContent: 'center',
+                        backgroundColor: '#006400',
                         borderColor: "#004577",
-                        borderWidth: 3 ,
+                        borderWidth: 3,
                     }}
-                    onPress = {()=> this.toAdminPage()}
+                    onPress={() => this.toAdminPage()}
                 >
-                <Text style = {{fontSize: 15, color: "#fff",textAlign:"center" }}>כניסה למנהל</Text>
+                    <Text style={{ fontSize: 15, color: "#fff", textAlign: "center" }}>כניסה למנהל</Text>
                 </TouchableOpacity>
             </View>
         )
     }
 
-    async toAdminPage(){
-        if(this.state.email === "" | this.state.password === "")
-        {
+    toAdminPage() {
+        if (this.state.email === "" | this.state.password === "") {
             this.dropDownAlertRef.alertWithType('warn', '', "אחד או יותר מהשדות ריקים")
             return;
         }
@@ -159,72 +157,78 @@ export default class Login extends Component {
         this.usersRef.once("value")
             .then((users) => {
                 users.forEach((user) => {
-                    if (user.val().email === this.state.email && user.val().type !== 'משתמש') {
-                        firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
-                            .then(() => {
-                                this.resetFields();
-                                this.props.navigation.navigate('CategoriesManagement', { adminType: user.val().type });
-                            })
-                            .catch(() => this.dropDownAlertRef.alertWithType('warn', '', "המייל או הסיסמא אינם נכונים"))
-                    }
+                    if (user.val().email === this.state.email)
+                        if (user.val().type !== 'משתמש') {
+                            firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
+                                .then(() => {
+                                    this.resetFields();
+                                    this.props.navigation.navigate('CategoriesManagement', { adminType: user.val().type });
+                                })
+                                .catch(() => this.dropDownAlertRef.alertWithType('warn', '', "המייל או הסיסמא אינם נכונים"))
+                        }
+                        else {
+                            this.resetFields();
+                            this.dropDownAlertRef.alertWithType('warn', '', "למשתמש זה חסרות הרשאות")
+                            return;
+                        }
                 })
-                this.dropDownAlertRef.alertWithType('warn', '', "למשתמש זה חסרות הרשאות")
             })
             .catch(() => this.dropDownAlertRef.alertWithType('warn', '', "קרתה תקלה, אנא נסה שנית"))
+            
     }
 
 
-    resetFields(){
+    resetFields() {
         this.setState({
             email: '',
-            password: '',                  
+            password: '',
             pressed_login: false,
             pressed_register: false,
             pressed_as_a_guest: false,
-            pressed_forgotten : false
+            pressed_forgotten: false
         })
     }
 
 
 
     render() {
-        return(
-            <View height = "100%" width = "100%" style = {{flex:1}}>
+        return (
+            <View height="100%" width="100%" style={{ flex: 1 }}>
                 <Image
-                    source={require ("../Images/App_Logo.jpg")}
+                    source={require("../Images/App_Logo.jpg")}
                     style={styles.image}
                 />
 
-                <ImageBackground source={require ('../Images/Login_BackGround.jpg')} imageStyle={{opacity:0.15}} style={{flex: 1,height:"100%"}}>
+                <ImageBackground source={require('../Images/Login_BackGround.jpg')} imageStyle={{ opacity: 0.15 }} style={{ flex: 1, height: "100%" }}>
 
-                    <KeyboardAwareScrollView enableOnAndroid = "true" >
-                    
-                        <View style = {styles.InputView}>
-                            <TextInput style = {styles.textInputStyle}
-                                placeholder = "דוא'ל"
-                                placeholderTextColor = "#006400"
-                                autoCorrect = {false}
-                                onChangeText = {email => this.setState({ email })}
-                                value = {this.state.email}       
+                    <KeyboardAwareScrollView enableOnAndroid="true" >
+
+                        <View style={styles.InputView}>
+                            <TextInput style={styles.textInputStyle}
+                                placeholder="דוא'ל"
+                                placeholderTextColor="#006400"
+                                autoCorrect={false}
+                                onChangeText={email => this.setState({ email })}
+                                value={this.state.email}
                                 onSubmitEditing={() => { this.secondTextInput.focus(); }}
-                                blurOnSubmit={false}        
+                                blurOnSubmit={false}
                             />
                         </View>
 
-                        <View style = {styles.inputView}>
-                            <TextInput style = {styles.textInputStyle}
-                                placeholder = "סיסמא"
-                                placeholderTextColor = "#006400"
-                                autoCorrect = {false}
-                                secureTextEntry = {true}
-                                onChangeText = {password => this.setState({ password })}
-                                value = {this.state.password}
+                        <View style={styles.inputView}>
+                            <TextInput style={styles.textInputStyle}
+                                placeholder="סיסמא"
+                                placeholderTextColor="#006400"
+                                autoCorrect={false}
+                                secureTextEntry={true}
+                                onChangeText={password => this.setState({ password })}
+                                value={this.state.password}
                                 ref={(input) => { this.secondTextInput = input; }}
-                                onSubmitEditing={ () => this.login() }
+                                onSubmitEditing={() => this.login()}
                             />
                         </View>
-                        
-                        <View>{this.forgotPasswordButton()}</View>  
+
+                        <View>{this.forgotPasswordButton()}</View>
                         <View>{this.LoginButton()}</View>
                         <View>{this.registerButton()}</View>
                         <View>{this.guestButton()}</View>
@@ -232,7 +236,7 @@ export default class Login extends Component {
 
                     </KeyboardAwareScrollView>
                 </ImageBackground>
-                <View style={{ position: "absolute", top: "0%", right: "25%", width: "50%", height: "40%"}}>
+                <View style={{ position: "absolute", top: "0%", right: "25%", width: "50%", height: "40%" }}>
                     <DropdownAlert ref={ref => this.dropDownAlertRef = ref} />
                 </View>
             </View>
@@ -246,13 +250,13 @@ const styles = {
         height: "25%",
         width: "100%",
         alignSelf: "center",
-        marginBottom: "5%", 
+        marginBottom: "5%",
         paddingBottom: "9%",
         resizeMode: "stretch"
     },
 
-    inputView :{
-        paddingTop: "6%",  
+    inputView: {
+        paddingTop: "6%",
     },
     textInputStyle: {
         borderColor: "#006400",
@@ -267,19 +271,19 @@ const styles = {
     buttonViewStyle: {
         paddingTop: "5%",
         width: "50%",
-        alignSelf : "center",
-        borderColor : "grey",
+        alignSelf: "center",
+        borderColor: "grey",
     },
-    buttonStyle:{
-        height : 45,
-        alignItems:'center',
-        justifyContent:'center',
-        backgroundColor:'#006400',
+    buttonStyle: {
+        height: 45,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#006400',
         borderColor: "#004577",
-        borderWidth:3,
-        borderRadius: 10,   
+        borderWidth: 3,
+        borderRadius: 10,
     },
-    buttonTextStyle:{
+    buttonTextStyle: {
         fontSize: 20,
         color: "#fff"
     }

@@ -21,9 +21,9 @@ class AddLocationForm extends Component{
     componentDidMount(){
         if(this.props.navigation.state.params.isNew==false){
             this.setState({
-                place: this.props.navigation.state.params.place.name,
-                description: this.props.navigation.state.params.place.description,
-                selectedLabel: this.props.navigation.state.params.place.category
+                place: this.props.navigation.state.params.place.val().name,
+                description: this.props.navigation.state.params.place.val().description,
+                selectedLabel: this.props.navigation.state.params.place.val().category
             })
         }
         
@@ -86,19 +86,11 @@ class AddLocationForm extends Component{
             })
         }
         else{
-            var id;
-            var i=0;
-            this.placesRef.on('value',(places)=>{  
-                places.forEach((place) =>{
-                    if(place.child('latitude').val() === this.props.navigation.state.params.place.latitude && place.child('longitude').val() === this.props.navigation.state.params.place.longitude)
-                        id = place.key;
-                       
-                })
-            })
-            
-            this.placesRef.child(""+id).set({                //Adding place to DB.
-                latitude: this.props.navigation.state.params.place.latitude,
-                longitude: this.props.navigation.state.params.place.longitude,
+ 
+            var place = this.props.navigation.state.params.place;
+            this.placesRef.child(""+place.key).set({                //Adding place to DB.
+                latitude: place.val().latitude,
+                longitude: place.val().longitude,
                 name: this.state.place,
                 description:this.state.description,
                 category:this.state.selectedLabel

@@ -22,91 +22,115 @@ export default class Registeration extends Component {
     }
 
 
-    returnButton(){
-
-        return(
-            <View style = {{alignSelf: "flex-end", right: "-20%", top: "-40%", width: "130%", height: "13%"}}>
+    returnButton() {
+        return (
+            <View style={{ alignSelf: "flex-end", right: "-20%", top: "-40%", width: "130%", height: "13%" }}>
+                
                 <TouchableOpacity
-                    title = "Return"
+                    title="Return"
                     style={styles.returnButton}
-                    onPress = {()=>this.props.navigation.goBack()}
+                    onPress={() => this.props.navigation.goBack()}
                 >
-                    <Text style = {styles.returnButtonText}>חזור</Text>
+                    <Text style={styles.returnButtonText}>חזור</Text>
                 </TouchableOpacity>
+
             </View>
         )
     }
 
 
-    signUpButton(){
+    signUpButton() {
+        return (
+            <View style={styles.buttonViewStyle}>
 
-        return(
-            <View style = {styles.buttonViewStyle}>
                 <TouchableOpacity
-                    title = "SignUp"
+                    title="SignUp"
                     style={styles.buttonStyle}
-                    onPress = {() =>this.signUp()}
+                    onPress={() => this.signUp()}
                 >
-                <Text style = {{fontSize: 20, color: "#fff"}}>הרשם</Text>
+                    <Text style={{ fontSize: 20, color: "#fff" }}>הרשם</Text>
                 </TouchableOpacity>
+
             </View>
         )
     }
 
-    signUp(){
-        if(this.state.username === "" || this.state.password === ""|| this.state.verPassword === "" || this.state.email === ""){
-            this.dropDownAlertRef.alertWithType('warn', '', 'אנא מלא את כל השדות');
-            return;
-        }
-        if(this.state.password.length < 6){
-            this.dropDownAlertRef.alertWithType('warn', '', 'אנא הכנס סיסמא בעלת לפחות 6 תווים');
-            return;
-        }
-        if(this.state.password !== this.state.verPassword )
-        {
-            this.dropDownAlertRef.alertWithType('warn', '', 'הסיסמאות אינן תואמות');
-            return;
-        }
+    
+    signUp() {
+        if(this.validationCheck())
+            return
 
-        var userExists = false;                 //Checking if the user already exists in the system
-        this.usersRef.on('value',(snap)=>{  
-            snap.forEach((child) =>{
-                if(child.val().username === this.state.username)
-                    userExists = true;
-            })
-        })
-        
-        if(userExists){
-            this.dropDownAlertRef.alertWithType('warn', '', 'שם משתמש כבר קיים במערכת, אנא הכנס שם משתמש אחר');
+        if(this.existingUserCheck())
             return;
-        }
-            
+
 
         firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
-        .then(() =>{
-            var user = this.state.username;
+            .then(() => this.goToMap())
+            .catch((error) => this.registrationError(error))
 
-            this.usersRef.push({                //Adding username and password to DB.
-                email: this.state.email,
-                username: this.state.username,
-                type: "משתמש"
-            })
-
-            this.resetFields();
-            this.props.navigation.navigate('Map',{user : user , btn : "התנתק", intro : "first time"})
-        })
-        .catch((error) => {
-            if(error.message === "The email address is already in use by another account.")
-                this.dropDownAlertRef.alertWithType('warn', '', "דוא'ל זה הינו כבר רשום במערכת, אנא הכנס דוא'ל אחר");    
-            else if(error.message === "The email address is badly formatted.")
-                this.dropDownAlertRef.alertWithType('warn', '', 'פורמט האימייל אינו תקין');            
-            else
-                this.dropDownAlertRef.alertWithType('warn', '', 'קרתה תקלה, אנא נסה שנית');
-        })
     }
-    
 
-    resetFields(){
+
+    validationCheck(){
+        if (this.state.username === "" || this.state.password === "" || this.state.verPassword === "" || this.state.email === "") {
+            this.dropDownAlertRef.alertWithType('warn', '', 'אנא מלא את כל השדות');
+            return true;
+        }
+
+        if (this.state.password.length < 6) {
+            this.dropDownAlertRef.alertWithType('warn', '', 'אנא הכנס סיסמא בעלת לפחות 6 תווים');
+            return true;
+        }
+
+        if (this.state.password !== this.state.verPassword) {
+            this.dropDownAlertRef.alertWithType('warn', '', 'הסיסמאות אינן תואמות');
+            return true;
+        }
+        return false;
+    }
+
+    existingUserCheck(){
+        var userExists = false;                 //Checking if the user already exists in the system
+        this.usersRef.on('value', (users) => {
+            users.forEach((user) => {
+                if (user.val().username === this.state.username){
+                    userExists = true;
+                    return;
+                }
+            })
+        })
+
+        if (userExists) {
+            this.dropDownAlertRef.alertWithType('warn', '', 'שם משתמש כבר קיים במערכת, אנא הכנס שם משתמש אחר');
+            return true;
+        }
+        return false;
+    }
+
+    goToMap(){
+        var user = this.state.username;
+
+        this.usersRef.push({                //Adding username and password to DB.
+            email: this.state.email,
+            username: this.state.username,
+            type: "משתמש"
+        })
+
+        this.resetFields();
+        this.props.navigation.navigate('Map', { user: user, btn: "התנתק", intro: "first time" })
+    }
+
+    registrationError(error){
+        if (error.message === "The email address is already in use by another account.")
+            this.dropDownAlertRef.alertWithType('warn', '', "דוא'ל זה הינו כבר רשום במערכת, אנא הכנס דוא'ל אחר");
+        else if (error.message === "The email address is badly formatted.")
+            this.dropDownAlertRef.alertWithType('warn', '', 'פורמט האימייל אינו תקין');
+        else
+            this.dropDownAlertRef.alertWithType('warn', '', 'קרתה תקלה, אנא נסה שנית');
+    }
+
+    
+    resetFields() {
         this.setState({
             username: "",
             password: "",
@@ -118,86 +142,91 @@ export default class Registeration extends Component {
 
 
 
-    render(){
-        return(
-            <View height = "100%" width = "100%" style = {{flex:1}}>
-            <ImageBackground source={require ('../Images/BackGround.jpg')} imageStyle={{opacity:0.15}} style={{flex: 1,height:"100%"}}>
-            <KeyboardAwareScrollView enableOnAndroid = "true" >
-          
-                <Header 
-                    centerComponent = {{text: 'הרשמה' ,style: styles.centerComponentStyle }}
-                    backgroundColor="#e6ffe6"
-                    rightComponent = {this.returnButton()}
-                />
+    render() {
+        return (
+            <View height="100%" width="100%" style={{ flex: 1 }}>
 
-                <View style={styles.inputView}>
-                    <TextInput
-                        style = {styles.textInputStyle}
-                        textAlign = "center"
-                        placeholder = {"שם משתמש"}
-                        placeholderTextColor = "#006400"
-                        autoCorrect = {false}
-                        onChangeText = {username => this.setState({ username })}
-                        value = {this.state.username}
-                        onSubmitEditing={() => { this.secondTextInput.focus(); }}
-                        blurOnSubmit={false}
-                    />
-                </View>
-                
-                <View style={styles.inputView}>
-                    <TextInput
-                        style = {styles.textInputStyle}
-                        textAlign = "center"
-                        placeholder = {"סיסמא"}
-                        placeholderTextColor = "#006400"
-                        secureTextEntry = {true}
-                        autoCorrect = {false}
-                        onChangeText = {password => this.setState({ password })}
-                        value = {this.state.password}
-                        ref={(input) => { this.secondTextInput = input; }}
-                        onSubmitEditing={() => { this.thirdTextInput.focus(); }}
-                        blurOnSubmit={false}
-                    />
-                </View>
+                <ImageBackground source={require('../Images/BackGround.jpg')} imageStyle={{ opacity: 0.15 }} style={{ flex: 1, height: "100%" }}>
+                    
+                    <KeyboardAwareScrollView enableOnAndroid="true" >
 
-                <View style={styles.inputView}>
-                    <TextInput
-                        style = {styles.textInputStyle}
-                        textAlign = "center"
-                        placeholder = {"אימות סיסמא"}
-                        placeholderTextColor = "#006400"
-                        secureTextEntry = {true}
-                        autoCorrect = {false}
-                        onChangeText = {verPassword => this.setState({ verPassword })}
-                        value = {this.state.verPassword}
-                        ref={(input) => { this.thirdTextInput = input; }}
-                        onSubmitEditing={() => { this.fourthTextInput.focus(); }}
-                        blurOnSubmit={false}
-                    />
-                </View>
+                        <Header
+                            centerComponent={{ text: 'הרשמה', style: styles.centerComponentStyle }}
+                            backgroundColor="#e6ffe6"
+                            rightComponent={this.returnButton()}
+                        />
 
-                <View style={styles.inputView}>
-                    <TextInput
-                        style = {styles.textInputStyle}
-                        textAlign = "center"
-                        placeholder = {"אימייל"}
-                        placeholderTextColor = "#006400"
-                        autoCorrect = {false}
-                        onChangeText = {email => this.setState({ email })}
-                        value = {this.state.email}
-                        ref={(input) => { this.fourthTextInput = input; }}
-                        onSubmitEditing={ () => this.signUp() }
-                    />
-                </View>
-                
+                        <View style={styles.inputView}>
+                            <TextInput
+                                style={styles.textInputStyle}
+                                textAlign="center"
+                                placeholder={"שם משתמש"}
+                                placeholderTextColor="#006400"
+                                autoCorrect={false}
+                                onChangeText={username => this.setState({ username })}
+                                value={this.state.username}
+                                onSubmitEditing={() => { this.secondTextInput.focus(); }}
+                                blurOnSubmit={false}
+                            />
+                        </View>
 
-                <View>{this.signUpButton()}</View>
-              
-                </KeyboardAwareScrollView>
-                <View style={{ position: "absolute", top: "0%", right: "25%", width: "50%", height: "40%" }}>
-                    <DropdownAlert ref={ref => this.dropDownAlertRef = ref} />
-                </View>
-            </ImageBackground>
+                        <View style={styles.inputView}>
+                            <TextInput
+                                style={styles.textInputStyle}
+                                textAlign="center"
+                                placeholder={"סיסמא"}
+                                placeholderTextColor="#006400"
+                                secureTextEntry={true}
+                                autoCorrect={false}
+                                onChangeText={password => this.setState({ password })}
+                                value={this.state.password}
+                                ref={(input) => { this.secondTextInput = input; }}
+                                onSubmitEditing={() => { this.thirdTextInput.focus(); }}
+                                blurOnSubmit={false}
+                            />
+                        </View>
+
+                        <View style={styles.inputView}>
+                            <TextInput
+                                style={styles.textInputStyle}
+                                textAlign="center"
+                                placeholder={"אימות סיסמא"}
+                                placeholderTextColor="#006400"
+                                secureTextEntry={true}
+                                autoCorrect={false}
+                                onChangeText={verPassword => this.setState({ verPassword })}
+                                value={this.state.verPassword}
+                                ref={(input) => { this.thirdTextInput = input; }}
+                                onSubmitEditing={() => { this.fourthTextInput.focus(); }}
+                                blurOnSubmit={false}
+                            />
+                        </View>
+
+                        <View style={styles.inputView}>
+                            <TextInput
+                                style={styles.textInputStyle}
+                                textAlign="center"
+                                placeholder={"אימייל"}
+                                placeholderTextColor="#006400"
+                                autoCorrect={false}
+                                onChangeText={email => this.setState({ email })}
+                                value={this.state.email}
+                                ref={(input) => { this.fourthTextInput = input; }}
+                                onSubmitEditing={() => this.signUp()}
+                            />
+                        </View>
+
+
+                        <View>{this.signUpButton()}</View>
+
+                    </KeyboardAwareScrollView>
+
+                    <View style={{ position: "absolute", top: "0%", right: "25%", width: "50%", height: "40%" }}>
+                        <DropdownAlert ref={ref => this.dropDownAlertRef = ref} />
+                    </View>
+
+                </ImageBackground>
+
             </View>
         )
     }
@@ -206,10 +235,10 @@ export default class Registeration extends Component {
 
 const styles = {
     inputView: {
-        alignSelf : "center",
+        alignSelf: "center",
         paddingTop: "6%",
-        height : "15%",
-        width : "90%"
+        height: "15%",
+        width: "90%"
     },
     textInputStyle: {
         borderColor: "#006400",
@@ -219,29 +248,29 @@ const styles = {
         width: "80%",
         alignSelf: "center"
     },
-    centerComponentStyle:{
+    centerComponentStyle: {
         color: "#006400",
         fontWeight: "bold",
-        fontSize:30,
-        top:-10
+        fontSize: 30,
+        top: -10
     },
     buttonViewStyle: {
         paddingTop: "15%",
         width: "50%",
-        alignSelf : "center",
-        borderColor : "grey",
+        alignSelf: "center",
+        borderColor: "grey",
     },
-    buttonStyle:{
-        height : 45,
-        alignItems:'center',
-        justifyContent:'center',
-        backgroundColor:'#006400',
+    buttonStyle: {
+        height: 45,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#006400',
         borderColor: "#004577",
-        borderWidth:3,
-        borderRadius: 10,   
+        borderWidth: 3,
+        borderRadius: 10,
     },
-    returnButton:{
-        backgroundColor:'#006400',
+    returnButton: {
+        backgroundColor: '#006400',
         color: "#fff",
         borderRadius: 26,
         fontSize: 20,
@@ -252,8 +281,8 @@ const styles = {
         height: 35,
         left: -10
     },
-    returnButtonText:{
-        fontSize: 20, 
+    returnButtonText: {
+        fontSize: 20,
         color: "#fff"
     }
 }

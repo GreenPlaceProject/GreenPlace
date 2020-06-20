@@ -21,20 +21,15 @@ class Map extends Component{
         };
     }
 
-        
-    componentWillMount(){
-        this.getPickers();
-        this.getPlaces();
-    }
 
     componentDidMount() {
-        this.pickersRef.on('child_added', (snap) => this.getPickers())
-        this.pickersRef.on('child_changed', (snap) => this.getPickers())
-        this.pickersRef.on('child_removed', (snap) => this.getPickers())
+        this.pickersRef.on('child_added', () => this.getPickers())
+        this.pickersRef.on('child_changed', () => this.getPickers())
+        this.pickersRef.on('child_removed', () => this.getPickers())
         
-        this.placesRef.on('child_added', (snap) => this.getPlaces())
-        this.placesRef.on('child_changed', (snap) => this.getPlaces())
-        this.placesRef.on('child_removed', (snap) => this.getPlaces())
+        this.placesRef.on('child_added', () => this.getPlaces())
+        this.placesRef.on('child_changed', () => this.getPlaces())
+        this.placesRef.on('child_removed', () => this.getPlaces())
         
     }
 
@@ -44,7 +39,7 @@ class Map extends Component{
             places.forEach((place) =>{
                 placesList.push(
                     <Marker coordinate = {{latitude: place.val().latitude, longitude: place.val().longitude}}
-                    onPress={(event)=>this.showPlace(event)}
+                    onPress={()=>this.showPlace(place)}
                     image={require('../Images/icons8-adobe-animate-100.png')}
                     /> 
                 )
@@ -70,10 +65,6 @@ class Map extends Component{
         pickers_list.push(<Picker.Item label="אחר" value={i}></Picker.Item>)
         this.setState({ pickers: pickers_list })
     }
-
-
-
-
 
 
 
@@ -103,17 +94,17 @@ class Map extends Component{
         )
     }
 
-    showPlace(event){
-        var place = this.state.myCoordinates.filter((coordinate,i) => {
-            return(coordinate.latitude==event.nativeEvent.coordinate.latitude && coordinate.longitude==event.nativeEvent.coordinate.longitude)
 
-        });
-        Alert.alert(""+place[0].name, ""+place[0].description,
-        [{text: 'יציאה', onPress: ()=> {return}},
-        {text: 'מחיקת מקום', onPress: ()=> this.deletePlace(place[0])},
-        {text: 'עריכת מקום', onPress: () => this.updatePlace(place[0])}])
+    showPlace(place) {
+        Alert.alert("" + place.val().name, "" + place.val().description,
+            [
+                { text: 'יציאה', onPress: () => { return } },
+                { text: 'מחיקת מקום', onPress: () => this.deletePlace(place) },
+                { text: 'עריכת מקום', onPress: () => this.updatePlace(place) }
+            ])
     }
 
+    
     updatePlace(place){
         if(this.props.navigation.state.params.user === "")
             Alert.alert("נא להרשם/להתחבר כדי לערוך מקום במפה");
@@ -121,25 +112,15 @@ class Map extends Component{
             this.props.navigation.navigate('AddLocation', {isNew: false,place: place});
     }
 
-    deletePlace(place){
-        if(this.props.navigation.state.params.user === "")
+    deletePlace(place) {
+        if (this.props.navigation.state.params.user === "")
             Alert.alert("נא להרשם/להתחבר כדי למחוק מקום מהמפה");
-        else{
-            Alert.alert( 'האם אתה בטוח?','',
-            [{text: 'לא', onPress: ()=> {return}},
-            {text: 'כן', onPress: () => {
-                var id;
-                //Alert.alert(""+place.latitude);
-                this.placesRef.on('value',(places)=>{  
-                    places.forEach((child) =>{
-                        if(child.child('latitude').val() === place.latitude && child.child('longitude').val() === place.longitude)
-                            id = child.key;
-                        
-                    })
-                })
-                this.placesRef.child(""+id).remove();
-            }}])
-           
+        else {
+            Alert.alert('האם אתה בטוח?', '',
+                [
+                    { text: 'לא', onPress: () => { return } },
+                    { text: 'כן', onPress: () => this.placesRef.child(place.key).remove() }
+                ])
         }
     }
 
