@@ -22,6 +22,8 @@ export default class Registeration extends Component {
     }
 
 
+
+    /**A function for the 'return' button to Login (returns the button). */
     returnButton() {
         return (
             <View style={{ alignSelf: "flex-end", right: "-20%", top: "-40%", width: "130%", height: "13%" }}>
@@ -39,6 +41,7 @@ export default class Registeration extends Component {
     }
 
 
+    /**A function for the 'sign-up' button (returns the button).  */
     signUpButton() {
         return (
             <View style={styles.buttonViewStyle}>
@@ -55,9 +58,9 @@ export default class Registeration extends Component {
         )
     }
 
-    
+    /**A function that creates and adds a new user to the database.  */
     signUp() {
-        if(this.validationCheck())
+        if(this.validationError())
             return
 
         if(this.existingUserCheck())
@@ -70,8 +73,9 @@ export default class Registeration extends Component {
 
     }
 
-
-    validationCheck(){
+    /**A function that checks if there's any input violation.
+     * Returns true if there's any violation, else returns false.   */   
+    validationError(){
         if (this.state.username === "" || this.state.password === "" || this.state.verPassword === "" || this.state.email === "") {
             this.dropDownAlertRef.alertWithType('warn', '', 'אנא מלא את כל השדות');
             return true;
@@ -89,8 +93,10 @@ export default class Registeration extends Component {
         return false;
     }
 
+    /**A function that checks if the user already exists.
+     * Returns true if the user already exists, else returns false.*/
     existingUserCheck(){
-        var userExists = false;                 //Checking if the user already exists in the system
+        var userExists = false;                 
         this.usersRef.on('value', (users) => {
             users.forEach((user) => {
                 if (user.val().username === this.state.username){
@@ -106,7 +112,8 @@ export default class Registeration extends Component {
         }
         return false;
     }
-
+    
+    /**A function that adds the new user to the DB and navigates to the Map screen.  */
     goToMap(){
         var user = this.state.username;
 
@@ -120,6 +127,7 @@ export default class Registeration extends Component {
         this.props.navigation.navigate('Map', { user: user, btn: "התנתק", intro: "first time" })
     }
 
+    /**A function that alerts the error type caused by failing to register. */
     registrationError(error){
         if (error.message === "The email address is already in use by another account.")
             this.dropDownAlertRef.alertWithType('warn', '', "דוא'ל זה הינו כבר רשום במערכת, אנא הכנס דוא'ל אחר");
@@ -138,7 +146,6 @@ export default class Registeration extends Component {
             email: ""
         })
     }
-
 
 
 
@@ -231,6 +238,7 @@ export default class Registeration extends Component {
         )
     }
 }
+
 
 
 const styles = {

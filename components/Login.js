@@ -5,6 +5,8 @@ import 'react-navigation'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import DropdownAlert from 'react-native-dropdownalert'
 
+
+
 export default class Login extends Component {
 
     constructor() {
@@ -13,27 +15,28 @@ export default class Login extends Component {
         this.state = {
             email: "",
             password: "",
-            pressed_login: false,
-            pressed_register: false,
-            pressed_as_a_guest: false
         }
     }
 
 
-    //A function returning TouchableOpacity for 'forgot password' button
+    
+    /**A function for  the 'forgot password' button (returns the button). */
     forgotPasswordButton() {
         return (
             <View style={{ width: "30%", left: "67%" }}>
+
                 <TouchableOpacity
                     title="forgotpassword"
                     onPress={() => this.forgotPassword()}
                 >
                     <Text style={{ fontSize: 15, color: "black" }}>שכחתי סיסמא</Text>
                 </TouchableOpacity>
+
             </View>
         )
     }
-    //Forgot password function
+
+    /**Forgot password function. */
     forgotPassword() {
 
         if (this.state.email === "") {
@@ -47,10 +50,12 @@ export default class Login extends Component {
         this.resetFields();
     }
 
-    //A function returning TouchableOpacity for 'Login' button
+
+    /**A function for the 'Login' button (returns the button). */
     LoginButton() {
         return (
             <View style={styles.buttonViewStyle}>
+
                 <TouchableOpacity
                     title="signIn"
                     style={styles.buttonStyle}
@@ -58,11 +63,12 @@ export default class Login extends Component {
                 >
                     <Text style={styles.buttonTextStyle}>הכנס</Text>
                 </TouchableOpacity>
+
             </View>
         )
     }
 
-    //Login and input validation checks function
+    /**Login and input validation checks function. */
     login() {
 
         if (this.state.email === "" | this.state.password === "") {
@@ -84,11 +90,12 @@ export default class Login extends Component {
             .catch(() => this.dropDownAlertRef.alertWithType('warn', '', "המייל או הסיסמא אינם נכונים"))
     }
 
-    //A function returning TouchableOpacity for 'Register' button
-    registerButton() {
 
+    /**A function for the 'Register' button (returns the button). */
+    registerButton() {
         return (
             <View style={styles.buttonViewStyle}>
+
                 <TouchableOpacity
                     title="register"
                     style={styles.buttonStyle}
@@ -96,20 +103,22 @@ export default class Login extends Component {
                 >
                     <Text style={styles.buttonTextStyle}>הרשם</Text>
                 </TouchableOpacity>
+
             </View>
         )
     }
-
 
     registerTransfer() {
         this.resetFields();
         this.props.navigation.navigate('Registration');
     }
 
-    //A function returning TouchableOpacity for 'Enter as a Guest' button
+
+    /**A function for the 'Enter as a Guest' button (returns the button). */
     guestButton() {
         return (
             <View style={styles.buttonViewStyle}>
+
                 <TouchableOpacity
                     title="asAGuest"
                     style={styles.buttonStyle}
@@ -117,6 +126,7 @@ export default class Login extends Component {
                 >
                     <Text style={styles.buttonTextStyle}>הכנס כאורח</Text>
                 </TouchableOpacity>
+
             </View>
         )
     }
@@ -127,11 +137,11 @@ export default class Login extends Component {
     }
 
 
-
-
+    /**A function for the admin's area button (returns the button). */
     adminButton() {
         return (
-            <View style={{ top: '0%', paddingTop: "18%", paddingStart: "1%", width: "15%", borderColor: "grey" }}>
+            <View style={{ top: '0%', paddingTop: "5%", paddingStart: "1%", width: "15%", borderColor: "grey" }}>
+
                 <TouchableOpacity
                     title="admin"
                     style={{
@@ -144,20 +154,22 @@ export default class Login extends Component {
                 >
                     <Text style={{ fontSize: 15, color: "#fff", textAlign: "center" }}>כניסה למנהל</Text>
                 </TouchableOpacity>
+
             </View>
         )
     }
 
+    /**A function that transfers the user to the "Admin's Area" if the user has permissions. */
     toAdminPage() {
         if (this.state.email === "" | this.state.password === "") {
             this.dropDownAlertRef.alertWithType('warn', '', "אחד או יותר מהשדות ריקים")
             return;
         }
 
-        this.usersRef.once("value")
+        this.usersRef.once("value")                             //Checking if the user has any admin permission
             .then((users) => {
                 users.forEach((user) => {
-                    if (user.val().email === this.state.email)
+                    if (user.val().email === this.state.email)      
                         if (user.val().type !== 'משתמש') {
                             firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
                                 .then(() => {
@@ -182,10 +194,6 @@ export default class Login extends Component {
         this.setState({
             email: '',
             password: '',
-            pressed_login: false,
-            pressed_register: false,
-            pressed_as_a_guest: false,
-            pressed_forgotten: false
         })
     }
 
@@ -244,6 +252,8 @@ export default class Login extends Component {
     }
 
 }
+
+
 
 const styles = {
     image: {
