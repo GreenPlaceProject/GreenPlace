@@ -11,10 +11,12 @@ class AddLocationForm extends Component{
     constructor(props){
         super(props);
         this.placesRef = firebase.database().ref().child('Places');
+        this.pickersRef = firebase.database().ref().child('Categories');
         this.state = {
             place: "",
             description: "",
-            selectedLabel: "1"
+            selectedLabel: "1",
+            pickers: []
         }
     }
 
@@ -26,7 +28,27 @@ class AddLocationForm extends Component{
                 selectedLabel: this.props.navigation.state.params.place.val().category
             })
         }
+
+        this.pickersRef.on('child_added', () => this.getPickers())
+        this.pickersRef.on('child_changed', () => this.getPickers())
+        this.pickersRef.on('child_removed', () => this.getPickers())
         
+    }
+
+    getPickers() {
+        var pickers_list = [];
+        pickers_list.push(<Picker.Item label="בחר קטגוריה" value="1"></Picker.Item>)
+        var i = 2;
+        this.pickersRef.orderByValue().on('value', (categories) => {
+            categories.forEach((category) => {
+                pickers_list.push(
+                    <Picker.Item label={category.val()} value={i} ></Picker.Item>
+                )
+                i++; 
+            })
+        })
+        pickers_list.push(<Picker.Item label="אחר" value={i}></Picker.Item>)
+        this.setState({ pickers: pickers_list })
     }
 
     Show=(value)=>{
@@ -139,19 +161,7 @@ class AddLocationForm extends Component{
                         <Picker style={{color: "#006400" , left:62 , top: '9%'}} 
                             selectedValue={this.state.selectedLabel}
                             onValueChange = {this.Show.bind()}>
-                            <Picker.Item label="בחר קטגוריה" value="1" ></Picker.Item>
-                            <Picker.Item label="אתר פריחה" value="2"></Picker.Item>
-                            <Picker.Item label="אתר צפרות וצפיית חיות בר" value="3"></Picker.Item>
-                            <Picker.Item label="גינה ציבורית" value="4"></Picker.Item>
-                            <Picker.Item label="גינה קהילתית" value="5"></Picker.Item>
-                            <Picker.Item label="חנות אופניים" value="6"></Picker.Item>
-                            <Picker.Item label="חנות טבע" value="7"></Picker.Item>
-                            <Picker.Item label="חנות יד שניה" value="8"></Picker.Item>
-                            <Picker.Item label="ספריית רחוב" value="9"></Picker.Item>
-                            <Picker.Item label="עץ פרי" value="10"></Picker.Item>
-                            <Picker.Item label="פח מיחזור" value="11"></Picker.Item>
-                            <Picker.Item label="צמח מאכל ומרפא" value="12"></Picker.Item>
-                            <Picker.Item label="קומפוסטר" value="13"></Picker.Item>  
+                            {this.state.pickers} 
                         </Picker>
                     </View>
 
