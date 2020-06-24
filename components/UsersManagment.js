@@ -9,9 +9,6 @@ import DropdownAlert from 'react-native-dropdownalert'
 
 
 
-
-
-
 export default class UsersManagment extends Component {
 
     constructor() {
@@ -23,16 +20,14 @@ export default class UsersManagment extends Component {
     }
 
 
-    componentWillMount() {
-        this.getUpdatedList();
-    }
 
     componentDidMount() {
-        this.usersRef.on('child_added', (snap) => this.getUpdatedList())
-        this.usersRef.on('child_changed', (snap) => this.getUpdatedList())
-        this.usersRef.on('child_removed', (snap) => this.getUpdatedList())
+        this.usersRef.on('child_added', () => this.getUpdatedList())
+        this.usersRef.on('child_changed', () => this.getUpdatedList())
+        this.usersRef.on('child_removed', () => this.getUpdatedList())
     }
 
+    /**A function that gets all existing users except 'admin-masters' and put them into a list .  */
     getUpdatedList() {
         var list = [];
         var type;
@@ -45,6 +40,7 @@ export default class UsersManagment extends Component {
                         <List.Item
                             title={user.val().username}
                             description={type}
+                            left={props => <List.Icon {...props} icon={require('../Images/Account.png')} />}
                             onPress={() => this.changeUserConfirmation(user)}
                         />
                     )
@@ -54,6 +50,7 @@ export default class UsersManagment extends Component {
     }
 
 
+    /**A function for 'return' button to sign-out and transfer to the Login screen (returns the button).  */
     returnButton() {
         return (
             <View style={{ alignSelf: "flex-end", right: "-20%", top: "-40%", width: "130%", height: "13%" }}>
@@ -76,6 +73,7 @@ export default class UsersManagment extends Component {
             .catch(() => this.dropDownAlertRef.alertWithType('warn', '', "התנתקות נכשלה"))
     }
 
+    /**A function for the "categories managment screen" button (returns the button). */
     toCategoriesButton() {
         return (
             <View style={styles.buttonViewStyle}>
@@ -85,7 +83,7 @@ export default class UsersManagment extends Component {
                     style={styles.buttonStyle}
                     onPress={() => this.props.navigation.navigate('CategoriesManagement')}
                 >
-                    <Text style={styles.returnButtonText}>ניהול קטגוריות</Text>
+                    <Text style={{color: "#fff", fontSize: 20}}>ניהול קטגוריות</Text>
                 </TouchableOpacity>
 
             </View>
@@ -93,20 +91,20 @@ export default class UsersManagment extends Component {
     }
 
 
-    changeUserConfirmation(child) {
+    changeUserConfirmation(user) {
         Alert.alert(
             'שים לב!',
-            "האם אתה בטוח שברצונך לשנות את '" + child.val().username + "' ?",
+            "האם אתה בטוח שברצונך לשנות את '" + user.val().username + "' ?",
             [
                 { text: 'ביטול', style: 'cancel' },
-                { text: 'שנה למנהל', onPress: () => this.changeUser(child, 'מנהל') },
-                { text: 'שנה למשתמש', onPress: () => this.changeUser(child, 'משתמש') }
+                { text: 'שנה למנהל', onPress: () => this.changeUser(user, 'מנהל') },
+                { text: 'שנה למשתמש', onPress: () => this.changeUser(user, 'משתמש') }
             ],
             { cancelable: false }
         );
     }
 
-
+    /**A function that changes the user's type to an admin or a normal user */
     changeUser(userInfo, newType) {
         firebase.database().ref('Users/' + userInfo.key).set({
             email: userInfo.val().email,
@@ -114,7 +112,6 @@ export default class UsersManagment extends Component {
             username: userInfo.val().username
         })
     }
-
 
 
 
@@ -154,11 +151,13 @@ export default class UsersManagment extends Component {
     }
 }
 
+
+
 const styles = {
     centerComponentStyle: {
         color: "#006400",
         fontWeight: "bold",
-        fontSize: 30,
+        fontSize: 25,
         top: -10
     },
     buttonViewStyle: {
@@ -189,7 +188,7 @@ const styles = {
         left: -10
     },
     returnButtonText: {
-        fontSize: 20,
+        fontSize: 13,
         color: "#fff"
     }
 }
