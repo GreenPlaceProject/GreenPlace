@@ -22,9 +22,10 @@ class Map extends Component {
     }
 
     componentDidMount() {
-        this.getPlaces();
-    }
-    componentDidMount() {
+        if (this.props.navigation.state.params.intro === "first time") {
+            this.props.navigation.state.params.intro = "";
+            Alert.alert("לחץ על המפה כדי להוסיף מקום חדש");
+        }
         this.pickersRef.on('child_added', () => this.getPickers())
         this.pickersRef.on('child_changed', () => this.getPickers())
         this.pickersRef.on('child_removed', () => this.getPickers())
@@ -35,18 +36,47 @@ class Map extends Component {
 
     }
 
+    selectIcon(category) {
+        if (category === "אתר פריחה")
+            return ('../Icons/floweringSite.jpeg')
+        if (category === "אתר צפרות וצפיה בחיות בר")
+            return ('../Icons/birdingSite.jpeg')
+        if (category === "גינה ציבורית")
+            return ('../Icons/publicGarden.jpeg')
+        if (category === "גינה קהילתית")
+            return ('../Icons/communityGarden.jpeg')
+        if (category === "חנות אופניים")
+            return ('../Icons/bicycleShop.jpeg')
+        if (category === "חנות טבע")
+            return ('../Icons/natureShop.jpeg')
+        if (category === "חנות יד שניה")
+            return ('../Icons/secondHandShop.jpeg')
+        if (category === "ספריית רחוב")
+            return ('../Icons/streetLibrary.jpeg')
+        if (category === "עץ פרי")
+            return ('../Icons/fruitTree.jpeg')
+        if (category === "פח מיחזור")
+            return ('../Icons/recyclingBins.jpeg')
+        if(category==="צמח מאכל ומרפא")
+            return ('../Icons/medicinalPlants.jpeg')
+        if(category==="קומפוסטר")
+            return ('../Icons/composter.jpeg')
+        else return ('../Icons/else.jpeg');
+    }
+
     getPlaces() {
         var placesList = [];
         this.placesRef.on('value', places => {
             places.forEach((place) => {
-                Alert.alert(""+place.val().category);
-                Alert.alert("bbbbb"+this.state.pickerSelectedLabel);
-                if(this.state.pickerSelectedLabel==="1" || place.val().category==this.state.pickerSelectedLabel){
-                   Alert.alert("success");
+                if (this.state.pickerSelectedLabel === "בחר קטגוריה" || place.val().category == this.state.pickerSelectedLabel) {
+                    var icon=this.selectIcon(place.val().category);
+                    icon="'"+icon+"'";
+                    //const x=require('../Icons/else.jpeg');
+                    alert(icon);
                     placesList.push(
                         <Marker coordinate={{ latitude: place.val().latitude, longitude: place.val().longitude }}
                             onPress={() => this.showPlace(place)}
-                            image={require('../Images/icons8-adobe-animate-100.png')}
+                            //image={icon}
                         />
                     )
                 }
@@ -60,17 +90,15 @@ class Map extends Component {
 
     getPickers() {
         var pickers_list = [];
-        pickers_list.push(<Picker.Item label="בחר קטגוריה" value="1"></Picker.Item>)
-        var i = 2;
+        pickers_list.push(<Picker.Item label="בחר קטגוריה" value="בחר קטגוריה"></Picker.Item>)
         this.pickersRef.orderByValue().on('value', (categories) => {
             categories.forEach((category) => {
                 pickers_list.push(
-                    <Picker.Item label={category.val()} value={i} ></Picker.Item>
+                    <Picker.Item label={category.val()} value={category.val()} ></Picker.Item>
                 )
-                i++; 
             })
         })
-        pickers_list.push(<Picker.Item label="אחר" value={i}></Picker.Item>)
+        pickers_list.push(<Picker.Item label="אחר" value="אחר"></Picker.Item>)
         this.setState({ pickers: pickers_list })
     }
 
@@ -88,20 +116,6 @@ class Map extends Component {
         else
             this.props.navigation.navigate('AddLocation', { isNew: true, latitude: latitude, longitude: longitude })
     }
-
-    displayCoordinates(myCoordinates) {
-        return (
-            myCoordinates.map((coordinate, i) => (
-                <Marker coordinate={{ latitude: coordinate.latitude, longitude: coordinate.longitude }}
-                    onPress={(event) => this.showPlace(event)}
-                    image={require('../Images/icons8-adobe-animate-100.png')}
-                >
-
-                </Marker>
-            ))
-        )
-    }
-
 
     showPlace(place) {
         Alert.alert("" + place.val().name, "" + place.val().description,
@@ -134,8 +148,7 @@ class Map extends Component {
 
     show = (value) => {
         this.setState({ pickerSelectedLabel: value });
-        
-        
+        setTimeout(() => { this.getPlaces(); }, 1);
     }
 
 

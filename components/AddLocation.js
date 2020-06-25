@@ -37,17 +37,15 @@ class AddLocationForm extends Component{
 
     getPickers() {
         var pickers_list = [];
-        pickers_list.push(<Picker.Item label="בחר קטגוריה" value="1"></Picker.Item>)
-        var i = 2;
+        pickers_list.push(<Picker.Item label="בחר קטגוריה" value="בחר קטגוריה"></Picker.Item>)
         this.pickersRef.orderByValue().on('value', (categories) => {
             categories.forEach((category) => {
                 pickers_list.push(
-                    <Picker.Item label={category.val()} value={i} ></Picker.Item>
+                    <Picker.Item label={category.val()} value={category.val()} ></Picker.Item>
                 )
-                i++; 
             })
         })
-        pickers_list.push(<Picker.Item label="אחר" value={i}></Picker.Item>)
+        pickers_list.push(<Picker.Item label="אחר" value="אחר"></Picker.Item>)
         this.setState({ pickers: pickers_list })
     }
 
