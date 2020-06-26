@@ -101,7 +101,8 @@ class AddLocationForm extends Component{
             longitude: this.props.navigation.state.params.longitude,
             name: this.state.place,
             description:this.state.description,
-            category:this.state.selectedLabel
+            category:this.state.selectedLabel,
+            
 
             })
         }
@@ -113,7 +114,8 @@ class AddLocationForm extends Component{
                 longitude: place.val().longitude,
                 name: this.state.place,
                 description:this.state.description,
-                category:this.state.selectedLabel
+                category:this.state.selectedLabel,
+              
     
             })
             

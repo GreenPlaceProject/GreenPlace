@@ -38,30 +38,30 @@ class Map extends Component {
 
     selectIcon(category) {
         if (category === "אתר פריחה")
-            return ('../Icons/floweringSite.jpeg')
+            return (require('../Icons/floweringSite.png'))
         if (category === "אתר צפרות וצפיה בחיות בר")
-            return ('../Icons/birdingSite.jpeg')
+            return (require('../Icons/birdingSite.png'))
         if (category === "גינה ציבורית")
-            return ('../Icons/publicGarden.jpeg')
+            return (require('../Icons/publicGarden.png'))
         if (category === "גינה קהילתית")
-            return ('../Icons/communityGarden.jpeg')
+            return (require('../Icons/communityGarden.png'))
         if (category === "חנות אופניים")
-            return ('../Icons/bicycleShop.jpeg')
+            return (require('../Icons/bicycleShop.png'))
         if (category === "חנות טבע")
-            return ('../Icons/natureShop.jpeg')
+            return (require('../Icons/natureShop.jpeg'))
         if (category === "חנות יד שניה")
-            return ('../Icons/secondHandShop.jpeg')
+            return (require('../Icons/secondHandShop.png'))
         if (category === "ספריית רחוב")
-            return ('../Icons/streetLibrary.jpeg')
+            return (require('../Icons/streetLibrary.png'))
         if (category === "עץ פרי")
-            return ('../Icons/fruitTree.jpeg')
+            return (require('../Icons/fruitTree.png'))
         if (category === "פח מיחזור")
-            return ('../Icons/recyclingBins.jpeg')
+            return (require('../Icons/recyclingBins.png'))
         if(category==="צמח מאכל ומרפא")
-            return ('../Icons/medicinalPlants.jpeg')
+            return (require('../Icons/medicinalPlants.png'))
         if(category==="קומפוסטר")
-            return ('../Icons/composter.jpeg')
-        else return ('../Icons/else.jpeg');
+            return (require('../Icons/composter.png'))
+        else return (require('../Icons/else.png'));
     }
 
     getPlaces() {
@@ -70,13 +70,10 @@ class Map extends Component {
             places.forEach((place) => {
                 if (this.state.pickerSelectedLabel === "בחר קטגוריה" || place.val().category == this.state.pickerSelectedLabel) {
                     var icon=this.selectIcon(place.val().category);
-                    icon="'"+icon+"'";
-                    //const x=require('../Icons/else.jpeg');
-                    alert(icon);
                     placesList.push(
                         <Marker coordinate={{ latitude: place.val().latitude, longitude: place.val().longitude }}
                             onPress={() => this.showPlace(place)}
-                            //image={icon}
+                            image={icon}
                         />
                     )
                 }
@@ -118,7 +115,7 @@ class Map extends Component {
     }
 
     showPlace(place) {
-        Alert.alert("" + place.val().name, "" + place.val().description,
+        Alert.alert("" + place.val().name , "קטגוריה:"+place.val().category+"\n"+ place.val().description,
             [
                 { text: 'יציאה', onPress: () => { return } },
                 { text: 'מחיקת מקום', onPress: () => this.deletePlace(place) },
