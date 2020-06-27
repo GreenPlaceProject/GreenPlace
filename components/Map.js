@@ -111,11 +111,11 @@ class Map extends Component {
         if (this.props.navigation.state.params.user === "")
             Alert.alert("נא להרשם/להתחבר כדי להוסיף מקום למפה");
         else
-            this.props.navigation.navigate('AddLocation', { isNew: true, latitude: latitude, longitude: longitude })
+            this.props.navigation.navigate('AddLocation', { isNew: true, latitude: latitude, longitude: longitude, creator: this.props.navigation.state.params.user  })
     }
 
     showPlace(place) {
-        Alert.alert("" + place.val().name , "קטגוריה:"+place.val().category+"\n"+ place.val().description,
+        Alert.alert("" + place.val().name , "קטגוריה:"+place.val().category+"\n"+ place.val().description + "\nיוצר: " + place.val().creator,
             [
                 { text: 'יציאה', onPress: () => { return } },
                 { text: 'מחיקת מקום', onPress: () => this.deletePlace(place) },
