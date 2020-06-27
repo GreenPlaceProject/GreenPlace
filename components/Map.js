@@ -48,7 +48,7 @@ class Map extends Component {
         if (category === "חנות אופניים")
             return (require('../Icons/bicycleShop.png'))
         if (category === "חנות טבע")
-            return (require('../Icons/natureShop.jpeg'))
+            return (require('../Icons/natureShop.png'))
         if (category === "חנות יד שניה")
             return (require('../Icons/secondHandShop.png'))
         if (category === "ספריית רחוב")
@@ -115,7 +115,7 @@ class Map extends Component {
     }
 
     showPlace(place) {
-        Alert.alert("" + place.val().name , "קטגוריה:"+place.val().category+"\n"+ place.val().description + "\nיוצר: " + place.val().creator,
+        Alert.alert("" + place.val().name , "קטגוריה:"+place.val().category+"\nנוצר על ידי: " + place.val().creator+"\n"+place.val().description ,
             [
                 { text: 'יציאה', onPress: () => { return } },
                 { text: 'מחיקת מקום', onPress: () => this.deletePlace(place) },
