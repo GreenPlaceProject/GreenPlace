@@ -69,14 +69,10 @@ class Map extends Component {
         this.placesRef.on('value', places => {
             places.forEach((place) => {
                 if (this.state.pickerSelectedLabel === "בחר קטגוריה" || place.val().category == this.state.pickerSelectedLabel) {
-                    var icon=this.selectIcon(place.val().category);
-                    icon="'"+icon+"'";
-                    //const x=require('../Icons/else.jpeg');
-                    alert(icon);
                     placesList.push(
                         <Marker coordinate={{ latitude: place.val().latitude, longitude: place.val().longitude }}
                             onPress={() => this.showPlace(place)}
-                            //image={icon}
+                            image={require('../Icons/else.jpeg')}
                         />
                     )
                 }
