@@ -90,7 +90,7 @@ class AddLocationForm extends Component{
             return;
         }
 
-        if(this.state.selectedLabel === "1"){
+        if(this.state.selectedLabel === "בחר קטגוריה"){
             this.dropDownAlertRef.alertWithType('warn', '',"אנא בחר קטגוריה");
             return;
         }
@@ -101,7 +101,9 @@ class AddLocationForm extends Component{
             longitude: this.props.navigation.state.params.longitude,
             name: this.state.place,
             description:this.state.description,
-            category:this.state.selectedLabel
+            category:this.state.selectedLabel,
+            creator: this.props.navigation.state.params.creator
+            
 
             })
         }
@@ -113,7 +115,8 @@ class AddLocationForm extends Component{
                 longitude: place.val().longitude,
                 name: this.state.place,
                 description:this.state.description,
-                category:this.state.selectedLabel
+                category:this.state.selectedLabel,
+                creator: place.val().creator,
     
             })
             
