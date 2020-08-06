@@ -1,11 +1,11 @@
 import React, { Component } from "react"
-import { Text, TouchableOpacity, Picker, Alert } from "react-native"
-import { View, Button } from "native-base"
+import { Text, TouchableOpacity, Picker, Alert, PermissionsAndroid  } from "react-native"
+import { View } from "native-base"
 import { Header } from "react-native-elements"
-import MapView, { PROVIDER_GOOGLE, Marker, Callout } from 'react-native-maps'
+import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps'
 import firebase from '../config/Firebase'
 import 'react-navigation'
-
+import Geolocation from '@react-native-community/geolocation'
 
 class Map extends Component {
     constructor(props) {
@@ -17,7 +17,9 @@ class Map extends Component {
             latitude: '',
             longitude: '',
             myCoordinates: [],
-            pickers: []
+            pickers: [],
+            currentLongitude: 31.756106,//Initial Longitude
+            currentLatitude: 35.165088,//Initial Latitude
         };
     }
 
@@ -34,7 +36,67 @@ class Map extends Component {
         this.placesRef.on('child_changed', () => this.getPlaces())
         this.placesRef.on('child_removed', () => this.getPlaces())
 
+
+        this.getLocation();
+
     }
+
+
+    getLocation(){
+
+        var that = this;
+        async function requestLocationPermission() {
+            const granted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION, {
+                'title': 'Location Access Required',
+                'message': 'This App needs to Access your location'
+            }
+            )
+            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                //To Check, If Permission is granted
+                that.callLocation(that);
+            }
+            else {
+                this.setState({
+                    currentLongitude: 31.756106,//Initial Longitude
+                    currentLatitude: 35.165088,//Initial Latitude
+                })
+                alert("לא ניתנה גישה למיקום");
+            }
+
+        }
+        requestLocationPermission();
+
+
+    }
+
+
+    callLocation(that){
+        Geolocation.getCurrentPosition(
+            (position) => {
+              const currLongitude = parseFloat(position.coords.longitude);
+              const currLatitude = parseFloat(position.coords.latitude);
+              that.setState({ currentLongitude:currLongitude });
+              that.setState({ currentLatitude:currLatitude });
+            },
+           (error) => alert(error.message),
+           { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+        );
+        that.watchID = Geolocation.watchPosition((position) => {
+            const currentLongitude = parseFloat(position.coords.longitude);
+            const currentLatitude = parseFloat(position.coords.latitude);
+           that.setState({ currentLongitude:currentLongitude });
+           that.setState({ currentLatitude:currentLatitude });
+        });
+    }
+
+
+    componentWillUnmount = () => Geolocation.clearWatch(this.watchID);
+
+
+
+
+
 
     selectIcon(category) {
         if (category === "אתר פריחה")
@@ -191,11 +253,12 @@ class Map extends Component {
                         provider={PROVIDER_GOOGLE}
                         style={styles.map}
                         region={{
-                            latitude: 31.756106,
-                            longitude: 35.165088,
+                            latitude: this.state.currentLatitude,
+                            longitude: this.state.currentLongitude,
                             latitudeDelta: 0.014,
                             longitudeDelta: 0.001
                         }}
+                        showsUserLocation = {true}
                         onPress={(event) => {
                             this.clickOnMap(event.nativeEvent.coordinate.latitude, event.nativeEvent.coordinate.longitude);
                         }}
