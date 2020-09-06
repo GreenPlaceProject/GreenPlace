@@ -1,11 +1,12 @@
 import React, { Component } from "react"
-import { Text, TouchableOpacity, Picker, Alert, PermissionsAndroid  } from "react-native"
+import { Text, TouchableOpacity, Picker, Alert, PermissionsAndroid ,Image } from "react-native"
 import { View } from "native-base"
 import { Header } from "react-native-elements"
-import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps'
+import MapView, { PROVIDER_GOOGLE, Marker, Callout } from 'react-native-maps'
 import firebase from '../config/Firebase'
 import 'react-navigation'
 import Geolocation from '@react-native-community/geolocation'
+
 
 class Map extends Component {
     constructor(props) {
@@ -26,7 +27,7 @@ class Map extends Component {
     componentDidMount() {
         if (this.props.navigation.state.params.intro === "first time") {
             this.props.navigation.state.params.intro = "";
-            Alert.alert("לחץ על המפה כדי להוסיף מקום חדש");
+            Alert.alert("לחץ לחיצה ארוכה על המפה כדי להוסיף מקום חדש");
         }
         this.pickersRef.on('child_added', () => this.getPickers())
         this.pickersRef.on('child_changed', () => this.getPickers())
@@ -36,21 +37,17 @@ class Map extends Component {
         this.placesRef.on('child_changed', () => this.getPlaces())
         this.placesRef.on('child_removed', () => this.getPlaces())
 
-
         this.getLocation();
-
     }
 
-
     getLocation(){
-
         var that = this;
         async function requestLocationPermission() {
             const granted = await PermissionsAndroid.request(
                 PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION, {
                 'title': 'Location Access Required',
                 'message': 'This App needs to Access your location'
-            }
+                }
             )
             if (granted === PermissionsAndroid.RESULTS.GRANTED) {
                 //To Check, If Permission is granted
@@ -63,13 +60,9 @@ class Map extends Component {
                 })
                 alert("לא ניתנה גישה למיקום");
             }
-
         }
         requestLocationPermission();
-
-
     }
-
 
     callLocation(that){
         Geolocation.getCurrentPosition(
@@ -90,13 +83,7 @@ class Map extends Component {
         });
     }
 
-
     componentWillUnmount = () => Geolocation.clearWatch(this.watchID);
-
-
-
-
-
 
     selectIcon(category) {
         if (category === "אתר פריחה")
@@ -131,21 +118,29 @@ class Map extends Component {
         this.placesRef.on('value', places => {
             places.forEach((place) => {
                 if (this.state.pickerSelectedLabel === "בחר קטגוריה" || place.val().category == this.state.pickerSelectedLabel) {
-                    var icon=this.selectIcon(place.val().category);
-                    placesList.push(
-                        <Marker coordinate={{ latitude: place.val().latitude, longitude: place.val().longitude }}
-                            onPress={() => this.showPlace(place)}
-                            image={icon}
-                        />
-                    )
+                    placesList.push(this.getPlace(place));
                 }
-
             })
         })
-
         this.setState({ myCoordinates: placesList })
     }
 
+    getPlace(place){
+        var icon=this.selectIcon(place.val().category);
+        return(
+            <Marker coordinate={{ latitude: place.val().latitude, longitude: place.val().longitude }}
+                title = {place.val().name}
+                description = {place.val().description}
+            >
+            <Image
+                source = {icon}
+                resizeMode="contain"
+                style={{width: 26, height: 28}}
+            />
+            {this.showPlace(place)}
+        </Marker>
+        )
+    }
 
     getPickers() {
         var pickers_list = [];
@@ -161,12 +156,10 @@ class Map extends Component {
         this.setState({ pickers: pickers_list })
     }
 
-
-
     clickOnMap(latitude, longitude) {
         Alert.alert('הוספת מקום', 'האם אתה רוצה להוסיף את המקום למפה?',
-            [{ text: 'לא', onPress: () => { return } },
-            { text: 'כן', onPress: () => this.yesPressed(latitude, longitude) }])
+        [{ text: 'לא', onPress: () => { return } },
+        { text: 'כן', onPress: () => this.yesPressed(latitude, longitude) }])
     }
 
     yesPressed(latitude, longitude) {
@@ -177,14 +170,31 @@ class Map extends Component {
     }
 
     showPlace(place) {
-        Alert.alert("" + place.val().name , "קטגוריה:"+place.val().category+"\nנוצר על ידי: " + place.val().creator+"\n"+place.val().description ,
-            [
-                { text: 'יציאה', onPress: () => { return } },
-                { text: 'מחיקת מקום', onPress: () => this.deletePlace(place) },
-                { text: 'עריכת מקום', onPress: () => this.updatePlace(place) }
-            ])
+        return (
+            <Callout style={{ width: 200 }}
+                onPress={() => this.editPlace(place)}
+            >
+                <Text style={{ fontSize: 20 }}>{place.val().name}</Text>
+                <Text style={{ fontSize: 15 }}>{place.val().category}</Text>
+                <Text style={{ fontSize: 14 }}>{place.val().description}</Text>
+                <Text style={{ paddingBottom: 10, fontSize: 13 }}>נוצר ע"י {place.val().creator}</Text>
+                <View style = {styles.markerBtn}>
+                    <TouchableOpacity title="edit" >
+                        <Text style={{ color: 'white' }}>עריכה</Text>
+                    </TouchableOpacity>
+                </View>
+            </Callout>
+        )
     }
 
+    editPlace(place) {
+        Alert.alert("" + place.val().name, "כיצד ברצונך לערוך מיקום זה?",
+            [
+                { text: 'ביטול', onPress: () => { return } },
+                { text: 'מחיקת מקום', onPress: () => this.deletePlace(place) },
+                { text: 'עריכת פרטי מקום', onPress: () => this.updatePlace(place) }
+            ])
+    }
 
     updatePlace(place) {
         if (this.props.navigation.state.params.user === "")
@@ -210,14 +220,15 @@ class Map extends Component {
         setTimeout(() => { this.getPlaces(); }, 1);
     }
 
-
     headerButton() {
-        return (<TouchableOpacity
-            title="signOut"
-            style={styles.returnButton}
-            onPress={() => this.buttonUser()}>
-            <Text style={styles.returnButtonText}>{this.props.navigation.state.params.btn}</Text>
-        </TouchableOpacity>)
+        return (
+            <TouchableOpacity
+                title="signOut"
+                style={styles.returnButton}
+                onPress={() => this.buttonUser()}>
+                <Text style={styles.returnButtonText}>{this.props.navigation.state.params.btn}</Text>
+            </TouchableOpacity>
+        )
     }
 
     buttonUser() {
@@ -237,17 +248,18 @@ class Map extends Component {
                 <Header
                     backgroundColor="#e6ffe6"
                     rightComponent={() => this.headerButton()}
-                >
-                </Header>
+                />
+
                 <View style={{ width: "70%", left: "1%" }}>
                     <Picker
                         selectedValue={this.state.pickerSelectedLabel}
                         onValueChange={this.show.bind()}
-                        style={{ position: 'absolute', left: 0, bottom: 10, right: 5 }}>
+                        style={{ position: 'absolute', left: 0, bottom: 10, right: 5 }}
+                    >
                         {this.state.pickers}
                     </Picker>
-
                 </View>
+                
                 <View>
                     <MapView
                         provider={PROVIDER_GOOGLE}
@@ -259,15 +271,14 @@ class Map extends Component {
                             longitudeDelta: 0.001
                         }}
                         showsUserLocation = {true}
-                        onPress={(event) => {
+                        onLongPress={(event) => {
                             this.clickOnMap(event.nativeEvent.coordinate.latitude, event.nativeEvent.coordinate.longitude);
                         }}
                     >
-
                         {this.state.myCoordinates}
-
                     </MapView>
                 </View>
+
             </View>
         )
     }
@@ -303,5 +314,14 @@ const styles = {
     map: {
         height: '100%'
     },
-
+    markerBtn: {
+        width: 50,
+        left: 75,
+        borderWidth: 1,
+        borderRadius: 10,
+        borderColor: 'transparent',
+        backgroundColor: '#006400',
+        color: "#fff",
+        alignItems: 'center',
+    },
 }
